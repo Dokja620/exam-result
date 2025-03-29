@@ -29,7 +29,7 @@
 					{/each}
 				</select>
 			{/each}
-			<button class="btn btn-primary">Search</button>
+			<button class="btn btn-primary">Rechercer</button>
 		</div>
 	</div>
 	<div class="divider"></div>

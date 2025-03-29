@@ -1,0 +1,136 @@
+{
+    "tables": [
+        {
+            "table_name": "bac_2024_region1",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Maroantsetra"
+        },
+        {
+            "table_name": "bac_2024_region2",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Miarinarivo"
+        },
+        {
+            "table_name": "bac_2024_region3",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Miarinarivo"
+        },
+        {
+            "table_name": "bac_2024_region4",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Toliara"
+        },
+        {
+            "table_name": "bac_2024_region5",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Antananarivo"
+        },
+        {
+            "table_name": "bac_2024_region6",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Mananjary"
+        },
+        {
+            "table_name": "bac_2024_region7",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Ambanja"
+        },
+        {
+            "table_name": "bac_2024_region8",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Tsiroanomandidy"
+        },
+        {
+            "table_name": "bac_2024_region9",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Antananarivo"
+        },
+        {
+            "table_name": "bac_2024_region10",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Ikalamavony"
+        },
+        {
+            "table_name": "bac_2024_region11",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Moramanga"
+        },
+        {
+            "table_name": "bac_2024_region12",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Mananjary"
+        },
+        {
+            "table_name": "bac_2024_region13",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Ambatondrazaka"
+        },
+        {
+            "table_name": "bac_2024_region14",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Mananjary"
+        },
+        {
+            "table_name": "bac_2024_region15",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Toamasina"
+        },
+        {
+            "table_name": "bac_2024_region16",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Ankazobe"
+        },
+        {
+            "table_name": "bac_2024_region17",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Mananjary"
+        },
+        {
+            "table_name": "bac_2024_region18",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Toliara"
+        },
+        {
+            "table_name": "bac_2024_region19",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Maroantsetra"
+        },
+        {
+            "table_name": "bac_2024_region20",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Ambatondrazaka"
+        },
+        {
+            "table_name": "bac_2024_region21",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Fianarantsoa"
+        },
+        {
+            "table_name": "bac_2024_region22",
+            "year": 2024,
+            "exam_type": "BAC",
+            "cisco": "Tsiroanomandidy"
+        }
+    ]
+}
