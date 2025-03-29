@@ -1,2 +1,27 @@
+@use '../shared';
+
 header {
+	padding: shared.$spacing-md shared.$spacing;
+	display: grid;
+	justify-content: center;
+	width: 100%;
+	max-width: 100vw;
+}
+nav {
+	display: flex;
+	align-items: center;
+	gap: shared.$spacing;
+	width: fit-content;
+	a {
+		img {
+			height: 90px;
+			width: auto;
+			object-fit: cover;
+		}
+	}
+	span {
+		font-size: 50px;
+		font-weight: 900;
+		color: color-mix(in srgb, var(--color-neutral), transparent 60%);
+	}
 }
