@@ -55,6 +55,38 @@
 	}
 
 	// styling status
+	[data-result] {
+		p {
+			background: var(--color);
+			width: fit-content;
+			padding: 0px 10px 2px 30px;
+			border-radius: shared.$spacing;
+			position: relative;
+			text-transform: capitalize;
+			&::after {
+				position: absolute;
+				left: 0;
+				content: '';
+				width: 12px;
+				aspect-ratio: 1;
+				border-radius: 50%;
+				top: 50%;
+				left: 10px;
+				transform: translateY(-50%);
+				background: var(--color-dot);
+			}
+		}
+	}
+	[data-result='admis'] {
+		--color: color-mix(in srgb, var(--color-success), transparent 75%);
+		--color-dot: color-mix(in srgb, var(--color-success), transparent 0%);
+		color: var(--color-success-content);
+	}
+	[data-result*='non'] {
+		--color: color-mix(in srgb, var(--color-error), transparent 75%);
+		--color-dot: color-mix(in srgb, var(--color-error), transparent 0%);
+		color: var(--color-error-content);
+	}
 }
 @media (max-width: $screenshift-lg) {
 	#table {

@@ -27,7 +27,7 @@
 			fullName: 'Andrianarivo Tovo Fanilo Hery',
 			cisco: 'Morondava',
 			school: 'School_5',
-			observation: 'admis',
+			observation: 'non admis',
 			mention: 'très bien',
 			rating: '1'
 		},
@@ -87,7 +87,8 @@
 						<td data-cell="nom et prénoms"><p>{item.fullName}</p></td>
 						<td data-cell="CISCO"><p>{item.cisco}</p></td>
 						<td data-cell="école d'origine"><p>{item.school}</p></td>
-						<td data-cell="observation"><p>{item.observation}</p></td>
+						<td data-cell="observation" data-result={item.observation}><p>{item.observation}</p></td
+						>
 						<td data-cell="mention" data-rating={item.rating}><p>{item.mention}</p></td>
 					</tr>
 				{/each}
