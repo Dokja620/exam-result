@@ -1,6 +1,15 @@
 // importing ScreenShift
 @use 'screenshift/scss';
 
+// importing shared style | Typos, Var and Mixins
+@use './shared';
+
+// Layout styles | Header and Footer
+@use './layout';
+
+// Landing page style
+@use './landing';
+
 body {
 	background: red;
 	font-family: 'Lato', sans-serif;
