@@ -13,7 +13,8 @@
 		"format": "prettier --write .",
 		"lint": "prettier --check . && eslint .",
 		"deploy": "bun run build && wrangler pages deploy",
-		"cf-typegen": "wrangler types && mv worker-configuration.d.ts src/"
+		"cf-typegen": "wrangler types && mv worker-configuration.d.ts src/",
+		"drizzle:studio": "drizzle-kit studio"
 	},
 	"devDependencies": {
 		"@cloudflare/workers-types": "^4.20250327.0",
@@ -24,6 +25,7 @@
 		"@sveltejs/vite-plugin-svelte": "^5.0.0",
 		"@tailwindcss/vite": "^4.0.0",
 		"daisyui": "^5.0.9",
+		"dotenv": "^16.4.7",
 		"drizzle-kit": "^0.30.6",
 		"eslint": "^9.18.0",
 		"eslint-config-prettier": "^10.0.1",
