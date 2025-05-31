@@ -8,7 +8,7 @@
         "@iconify/svelte": "^4.2.0",
         "drizzle-orm": "^0.41.0",
         "iconify-icon": "^2.3.0",
-        "screenshift": "^0.2.1",
+        "screenshift": "^0.2.7",
       },
       "devDependencies": {
         "@cloudflare/workers-types": "^4.20250327.0",
@@ -709,7 +709,7 @@
 
     "sass-embedded-win32-x64": ["sass-embedded-win32-x64@1.86.0", "", { "os": "win32", "cpu": "x64" }, "sha512-GVX0CHtukr3kjqfqretSlPiJzV7V4JxUjpRZV+yC9gUMTiDErilJh2Chw1r0+MYiYvumCDUSDlticmvJs7v0tA=="],
 
-    "screenshift": ["screenshift@0.2.1", "", { "bin": { "screenshift": "dist/bin/generate.js" } }, "sha512-9u1soK1RJNapKwCyo9tLJm0V0XxkcdagxO6TRym4lhfo8lAuHpiUXvHDCJGAXvrTaP5pBTNB9dwEsai/zp3CMA=="],
+    "screenshift": ["screenshift@0.2.7", "", { "bin": { "screenshift": "dist/bin/generate.js" } }, "sha512-sxIwTiug3/teRfAv7U0nO62zWtXVSDWO/wCP2FLmsD6sYiWLbHdhY1reLVQTjtWoPK84bkKPUu8FWrXm7m5I3A=="],
 
     "semver": ["semver@7.7.1", "", { "bin": { "semver": "bin/semver.js" } }, "sha512-hlq8tAfn0m/61p4BVRcPzIGr6LKiMwo4VM6dGi6pt4qcRkmNzTcWq6eCEjEh+qXjkMDvPlOFFSGwQjoEa6gyMA=="],
 

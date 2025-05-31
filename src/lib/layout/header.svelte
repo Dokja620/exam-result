@@ -4,13 +4,15 @@
 </script>
 
 <header>
-	<nav>
-		<a href="/" aria-label="link to another website">
-			<img src={logoMada} width="457px" height="348px" alt="Logo Repoblikan'i Madagasikara" />
-		</a>
-		<span>&</span>
-		<a href="/" aria-label="link to another website">
-			<img src={logoMESUPRES} width="411px" height="239px" alt="Logo MESUPRES" />
-		</a>
+	<nav data-screenshift>
+		<div class="logo">
+			<a href="/">OHAYO Result Hub</a>
+		</div>
+		<ul>
+			<li><a href="/">A-propos</a></li>
+		</ul>
+		<div class="actions">
+			<button class="btn btn-ghost">FR/MG</button>
+		</div>
 	</nav>
 </header>

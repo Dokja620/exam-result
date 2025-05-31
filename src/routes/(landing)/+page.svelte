@@ -1,5 +1,5 @@
 <script>
-	import Search from '$lib/pages/searchPage.svelte';
+	import Table from '$lib/landing/table.svelte';
 </script>
 
-<Search />
+<Table />
