@@ -75,7 +75,7 @@
 						<td data-cell="école d'origine"><p>{item.school}</p></td>
 						<td data-cell="observation" data-result={item.observation}><p>{item.observation}</p></td
 						>
-						<td data-cell="mention"><p>{item.mention}</p></td>
+						<td data-mention={item.mention} data-cell="mention"><p>{item.mention}</p></td>
 					</tr>
 				{/each}
 			</tbody>

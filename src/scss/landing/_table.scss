@@ -35,6 +35,7 @@
   th,
   td {
     padding: shared.$spacing shared.$spacing;
+    text-transform: capitalize;
   }
 
   th {
@@ -131,7 +132,7 @@
   }
 
   // Styling mention
-  [data-rating] {
+  [data-mention] {
     p {
       text-transform: capitalize;
       font-weight: 500;
@@ -155,27 +156,27 @@
   }
 
   // Très bien
-  [data-rating='1'] {
+  [data-mention*='très bien'] {
     --underline: hsla(106, 100%, 56%, 0.836);
   }
 
   // Bien
-  [data-rating='2'] {
+  [data-mention='bien'] {
     --underline: hsla(78, 100%, 56%, 0.74);
   }
 
   // Assez bien
-  [data-rating='3'] {
+  [data-mention='assez bien'] {
     --underline: hsla(49, 100%, 54%, 0.588);
   }
 
   // Passable
-  [data-rating='4'] {
+  [data-mention='passable'] {
     --underline: hsla(0, 0%, 66%, 0.527);
   }
 
   // Non admis
-  [data-rating='0'] {
+  [data-mention=''] {
     p::before {
       content: url();
     }
