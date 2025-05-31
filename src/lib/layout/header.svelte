@@ -4,7 +4,7 @@
 </script>
 
 <header>
-	<nav data-screenshift="debug">
+	<nav data-screenshift="">
 		<div class="logo">
 			<a href="/">OHAYO Result Hub</a>
 		</div>

@@ -1,13 +1,17 @@
 // See https://svelte.dev/docs/kit/types#app.d.ts
 // for information about these interfaces
 declare global {
-	namespace App {
-        interface Platform {
-            env: Env
-            cf: CfProperties
-            ctx: ExecutionContext
-        }
+  namespace App {
+    interface Platform {
+      env: Env
+      cf: CfProperties
+      ctx: ExecutionContext
     }
+    interface Locals {
+      pb: PocketBase;
+      user: AuthModel | undefined;
+    }
+  }
 }
 
-export {};
+export { };
