@@ -1,0 +1,6 @@
+@use '../shared';
+
+footer {
+  text-align: center;
+  margin: shared.$spacing 0;
+}
