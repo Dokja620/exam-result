@@ -1,41 +1,16 @@
 <script lang="ts">
 	import 'iconify-icon';
-	let modal: any;
-
-	function openModal() {
-		modal.showModal();
-	}
-	let filterIsFilled: boolean = true;
-
-	let filter = { examYear: 2025, examCisco: 'Antananarivo' };
+	import FilterBar from '$lib/components/table/FilterBar.svelte';
+	import PdFexport from '$lib/components/table/PDFexport.svelte';
+	export let examResults;
 </script>
 
 <section id="table">
+	<div class="actions" data-screenshift>
+		<FilterBar />
+		<PdFexport />
+	</div>
 	<div class="content" data-screenshift>
-		<section id="table-actions">
-			{#if filterIsFilled}
-				<div class="content">
-					<h3 class="title">Résultat du Baccalauréat - {filter.examCisco} - {filter.examYear}</h3>
-
-					<div class="actions">
-						<fieldset class="fieldset">
-							<label class="input">
-								<iconify-icon icon="tabler:search" class="text-lg"></iconify-icon>
-								<input type="search" class="grow" placeholder="Rechercher" />
-							</label>
-							<p class="fieldset-label">Recherchez par matricule, nom, série, école ou mention</p>
-						</fieldset>
-						<div class="export">
-							<button class="btn btn-secondary" aria-label="download pdf button">
-								<iconify-icon icon="ph:file-pdf" style="font-size: 30px"></iconify-icon>
-								Exporter en PDF
-							</button>
-						</div>
-					</div>
-				</div>
-			{/if}
-		</section>
-
 		<table>
 			<thead>
 				<tr>
@@ -49,8 +24,8 @@
 				</tr>
 			</thead>
 			<tbody>
-				{#each results as item (item.id)}
-					<tr onclick={openModal}>
+				{#each examResults as item (item.id)}
+					<tr>
 						<td data-cell="matricule"><p>{item.matricule}</p></td>
 						<td data-cell="serie"><p>{item.serie}</p></td>
 						<td data-cell="nom et prénoms"

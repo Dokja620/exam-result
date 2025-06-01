@@ -1,21 +1,20 @@
-import type { PageLoad } from "./$types";
-import type { Results } from "$lib/types";
+import type { PageLoad } from './$types';
 
-export const load: PageLoad = async () => {
+export const load: PageLoad = async ({ fetch }) => {
   try {
     const response = await fetch('/api/results');
 
     if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.details || `Server responded with : ${response.status}`);
+      throw new Error(`Failed to fetch results: ${response.statusText} (${response.status})`);
     }
 
-    const results: Results[] = await response.json();
-    console.log('Results successfully fetched');
+    const data = await response.json();
 
-    return { results };
-
-  } catch (err: any) {
-    console.log('Something went wrong');
+    return {
+      results: data,
+    };
+  } catch (error) {
+    console.error('Error fetching results:', error);
+    throw error;
   }
-}
+};
