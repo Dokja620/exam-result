@@ -18,3 +18,81 @@
     padding: 0;
   }
 }
+
+// modal styling
+#selected-modal {
+  .modal-box {
+    display: grid;
+    border-radius: shared.$spacing-md;
+    padding: shared.$spacing;
+    gap: shared.$spacing;
+
+    h3 {
+      text-align: center;
+    }
+
+    &.failed {
+      filter: grayscale(0.5);
+    }
+  }
+
+  .result-overview {
+    display: flex;
+    justify-content: space-evenly;
+    align-items: center;
+    border-radius: shared.$spacing;
+    padding: shared.$spacing;
+    background-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+
+    .icon {
+      width: fit-content;
+    }
+
+    .info {
+      text-transform: capitalize;
+      color: white;
+
+      span {
+        text-transform: uppercase;
+      }
+    }
+
+    .mention {
+      display: flex;
+      gap: shared.$spacing-xs;
+      align-items: center;
+
+      iconify-icon {
+        font-size: 24px;
+      }
+    }
+  }
+
+  .modal-content {
+    display: grid;
+    gap: shared.$spacing-lg;
+  }
+
+  .text {
+    display: grid;
+    gap: shared.$spacing-xs;
+  }
+
+  .icon {
+    display: grid;
+    place-content: center;
+    color: white;
+  }
+
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: shared.$spacing;
+
+    button {
+      flex-grow: 1;
+      display: flex;
+      gap: shared.$spacing;
+    }
+  }
+}

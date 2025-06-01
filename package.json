@@ -48,6 +48,7 @@
 		"@fontsource/lato": "^5.2.5",
 		"@iconify/svelte": "^4.2.0",
 		"drizzle-orm": "^0.41.0",
+		"html2canvas": "^1.4.1",
 		"iconify-icon": "^2.3.0",
 		"pocketbase": "^0.26.0",
 		"screenshift": "^0.2.7"

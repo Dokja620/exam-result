@@ -2,6 +2,7 @@
 	import 'iconify-icon';
 	import FilterBar from '$lib/components/table/FilterBar.svelte';
 	import PdFexport from '$lib/components/table/PDFexport.svelte';
+	import Modal from '$lib/components/table/Modal.svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/stores';
 
@@ -26,6 +27,14 @@
 		clearTimeout(searchTimeout);
 		searchTimeout = setTimeout(handleSearch, 100);
 	}
+
+	let selectedItem = $state(null);
+
+	function openModal(item: any) {
+		selectedItem = item;
+		// @ts-ignore
+		document.getElementById('selected-modal').showModal();
+	}
 </script>
 
 <section id="table">
@@ -48,7 +57,7 @@
 			</thead>
 			<tbody>
 				{#each examResults as item (item.id)}
-					<tr>
+					<tr onclick={() => openModal(item)}>
 						<td data-cell="matricule"><p>{item.matricule}</p></td>
 						<td data-cell="serie"><p>{item.serie}</p></td>
 						<td data-cell="nom et prénoms"
@@ -65,3 +74,4 @@
 		</table>
 	</div>
 </section>
+<Modal {selectedItem} />
