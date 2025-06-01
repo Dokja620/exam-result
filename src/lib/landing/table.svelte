@@ -1,22 +1,5 @@
 <script lang="ts">
 	import 'iconify-icon';
-	import { onMount } from 'svelte';
-	let results: Results[] = $state();
-	onMount(async () => {
-		try {
-			const response = await fetch('/api/results');
-			if (!response.ok) {
-				const errorData = await response.json();
-				throw new Error(errorData.details || `Server responded with : ${response.status}`);
-			}
-			const fetchedResults: Results[] = await response.json();
-			results = fetchedResults;
-			console.log('Houses successfully fetched into Swiper');
-		} catch (err: any) {
-			console.log('Something went wrong');
-		}
-	});
-
 	let modal: any;
 
 	function openModal() {
@@ -70,7 +53,9 @@
 					<tr onclick={openModal}>
 						<td data-cell="matricule"><p>{item.matricule}</p></td>
 						<td data-cell="serie"><p>{item.serie}</p></td>
-						<td data-cell="nom et prénoms"><p>{item.last_name} {item.first_name}</p></td>
+						<td data-cell="nom et prénoms"
+							><p><span>{item.last_name}</span> {item.first_name}</p></td
+						>
 						<td data-cell="CISCO"><p>{item.CISCO}</p></td>
 						<td data-cell="école d'origine"><p>{item.school}</p></td>
 						<td data-cell="observation" data-result={item.observation}><p>{item.observation}</p></td

@@ -38,6 +38,10 @@
     text-transform: capitalize;
   }
 
+  p span {
+    text-transform: uppercase;
+  }
+
   th {
     &:first-of-type {
       min-width: 14ch;
@@ -98,7 +102,7 @@
   [data-result] {
     p {
       background: var(--color);
-      width: fit-content;
+      width: max-content;
       padding: 0px 10px 2px 30px;
       border-radius: shared.$spacing;
       position: relative;
@@ -137,7 +141,7 @@
       text-transform: capitalize;
       font-weight: 500;
       position: relative;
-      width: fit-content;
+      width: max-content;
       padding-left: 30px;
 
       &::before {

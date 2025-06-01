@@ -8,14 +8,13 @@ export const GET: RequestHandler = async ({ locals }) => {
   }
   try {
     console.log('API: Fetching results from database...')
-    const examResults = await locals.pb.collection('results')
-      .getFullList({
-        sort: '-created'
-      })
+    const examResults = await locals.pb.collection('results').getList(1, 20, {
+      filter: 'created>="2025-01-01"',
+    })
 
-    console.log(`API: Successfully fetched ${examResults.length} results`)
+    console.log(`API: Successfully fetched ${examResults.items.length} results`)
 
-    return json(examResults)
+    return json(examResults.items)
   } catch (error: any) {
     console.error('API: Error fetching results', error)
     return json({ error: 'Failed to retrieve results', details: error.message }, { status: 500 })
