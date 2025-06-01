@@ -1,20 +1,22 @@
 import type { PageLoad } from './$types';
 
-export const load: PageLoad = async ({ fetch }) => {
-  try {
-    const response = await fetch('/api/results');
+export const load: PageLoad = async ({ fetch, url }) => {
+  const search = url.searchParams.get('search')?.trim() || '';
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch results: ${response.statusText} (${response.status})`);
-    }
+  const endpoint = search
+    ? `/api/results?search=${encodeURIComponent(search)}`
+    : `/api/results`;
 
-    const data = await response.json();
+  const res = await fetch(endpoint);
 
-    return {
-      results: data,
-    };
-  } catch (error) {
-    console.error('Error fetching results:', error);
-    throw error;
+  if (!res.ok) {
+    throw new Error('Failed to fetch results');
   }
+
+  const results = await res.json();
+
+  return {
+    results,
+    search,
+  };
 };

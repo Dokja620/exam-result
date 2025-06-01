@@ -1,28 +1,6 @@
 @use '../shared';
 @use 'screenshift/scss' as mq;
 
-#table-actions {
-  margin-bottom: shared.$spacing;
-
-  .title {
-    text-align: center;
-    margin-bottom: shared.$spacing-lg;
-  }
-
-  .actions {
-    display: flex;
-    justify-content: space-between;
-    align-items: flex-start;
-
-    label {
-      max-width: 250px;
-    }
-
-    .fieldset {
-      padding: 0;
-    }
-  }
-}
 
 #table {
   table {

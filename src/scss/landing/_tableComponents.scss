@@ -1,3 +1,20 @@
+@use '../shared';
+
 #title {
   text-align: center;
+}
+
+#table-actions {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-bottom: shared.$spacing;
+
+  label {
+    max-width: 250px;
+  }
+
+  .fieldset {
+    padding: 0;
+  }
 }
