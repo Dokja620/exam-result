@@ -16,7 +16,8 @@ const sw = self as unknown as ServiceWorkerGlobalScope;
 const ASSETS_CACHE = `assets-${version}`;
 const DATA_CACHE = 'results-data-v2';
 const PAGES_CACHE = 'pages-v1';
-const ASSETS = [...build, ...files];
+// Les images Open Graph ne servent qu'aux robots des réseaux sociaux : pas de pré-cache
+const ASSETS = [...build, ...files.filter((f) => !f.startsWith('/og/'))];
 
 sw.addEventListener('install', (event) => {
 	event.waitUntil(
