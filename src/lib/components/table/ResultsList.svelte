@@ -165,7 +165,10 @@
 							<td>{item.serie}</td>
 							<td class="muted lg">{item.ecole}</td>
 							<td><span class="statut-tag" data-statut={item.statut}>{cap(item.statut)}</span></td>
-							<td class="mention">{item.mention || '—'}</td>
+							<td class="mention">
+								{#if item.mention}<span class="hl" data-mention={item.mention}>{item.mention}</span
+									>{:else}—{/if}
+							</td>
 							<td class="moy">{moy(item.moyenne)}</td>
 						</tr>
 					{/each}
