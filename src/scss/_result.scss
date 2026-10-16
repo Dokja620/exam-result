@@ -1,220 +1,281 @@
 @use './tokens' as *;
 
-// Le relevé : une feuille blanche, un bandeau de statut, puis le nom et les détails.
+// Le relevé : une feuille, un verdict en tête sur une teinte douce, puis le nom et la note.
 .releve {
-	--band-bg: var(--color-base-200);
-	--band-fg: var(--ink);
-	--band-rule: var(--line-strong);
+	--wash: var(--stone-wash);
+	--verdict: var(--ink);
+	--zone-on: var(--stone);
 
 	background: var(--paper);
 	color: var(--ink);
 	border-radius: var(--r-lg);
-	border: 1px solid var(--line);
-	box-shadow: var(--shadow-card);
+	box-shadow: var(--shadow-sheet);
 	overflow: hidden;
 	width: 100%;
-	max-width: 36rem;
+	max-width: 34rem;
 	margin-inline: auto;
 	box-sizing: border-box;
 
 	&[data-statut='admis'] {
-		--band-bg: var(--mint);
-		--band-fg: var(--teal);
-		--band-rule: color-mix(in oklab, var(--teal) 30%, var(--mint));
+		--wash: var(--mint-tint);
+		--verdict: var(--teal);
+		--zone-on: var(--teal);
 	}
 	&[data-statut='2e session'] {
-		--band-bg: color-mix(in oklab, var(--color-warning) 26%, var(--paper));
-		--band-fg: var(--color-warning-content);
-		--band-rule: color-mix(in oklab, var(--color-warning) 60%, var(--paper));
+		--wash: var(--amber-wash);
+		--verdict: var(--amber-ink);
+		--zone-on: var(--amber);
 	}
 
-	// En-tête institutionnel
-	.officiel {
-		display: flex;
-		flex-wrap: wrap;
-		align-items: center;
-		gap: 0.75rem;
-		padding: 0.9rem 1.25rem;
-		font-size: 0.8125rem;
-		color: var(--ink-2);
-		border-bottom: 1px solid var(--line);
+	// Verdict
+	.verdict {
+		background: var(--wash);
+		padding: 1.25rem 1.5rem 1.75rem;
 
-		img {
-			width: 1.75rem;
-			height: auto;
-			border-radius: 2px;
-			flex: none;
+		@include up($bp-sm) {
+			padding: 1.5rem 2rem 2rem;
 		}
-		b {
-			display: block;
-			color: var(--ink);
+
+		.meta {
+			display: flex;
+			justify-content: space-between;
+			gap: 1rem;
+			font-size: var(--fs-xs);
 			font-weight: 700;
+			color: color-mix(in oklab, var(--verdict) 75%, var(--wash));
+			margin-bottom: 1.75rem;
 		}
-		.session {
-			margin-left: auto;
-			text-align: right;
-			white-space: nowrap;
-			font-variant-numeric: tabular-nums;
-		}
-	}
-
-	// Bandeau : le verdict
-	.band {
-		background: var(--band-bg);
-		color: var(--band-fg);
-		padding: 1.5rem 1.25rem;
-		display: grid;
-		gap: 0.2rem;
-		border-bottom: 1px solid var(--band-rule);
 
 		.statut {
-			font-size: clamp(2.25rem, 1.5rem + 3vw, 3rem);
-			font-weight: 900;
-			line-height: 1;
-			letter-spacing: -0.02em;
+			font-family: var(--display);
+			font-size: clamp(3.25rem, 2.4rem + 4vw, 4.5rem);
+			font-weight: 700;
+			line-height: 0.9;
+			letter-spacing: -0.045em;
+			color: var(--verdict);
 		}
 		.sous {
-			font-size: 1.0625rem;
+			margin-top: 0.6rem;
+			font-size: var(--fs-md);
 			font-weight: 700;
-			opacity: 0.9;
+			color: var(--verdict);
+
+			&::first-letter {
+				text-transform: uppercase;
+			}
 		}
 	}
 
-	// Corps
 	.corps {
-		padding: 1.5rem 1.25rem;
+		padding: 1.5rem 1.5rem 0.5rem;
 		display: grid;
-		gap: 1.25rem;
+		gap: 1.75rem;
+
+		@include up($bp-sm) {
+			padding: 1.75rem 2rem 0.5rem;
+		}
 	}
 
 	.identite {
 		.nom {
-			font-size: 1.5rem;
-			font-weight: 900;
+			font-family: var(--display);
+			font-size: var(--fs-lg);
+			font-weight: 700;
+			letter-spacing: -0.015em;
 			line-height: 1.15;
-			letter-spacing: -0.01em;
+			overflow-wrap: anywhere;
 		}
 		.prenoms {
-			font-size: 1.25rem;
-			line-height: 1.25;
+			font-size: var(--fs-md);
+			color: var(--ink-2);
+			margin-top: 0.15rem;
 		}
 	}
 
-	// Moyenne + série : la deuxième ligne de lecture
-	.score {
-		display: grid;
-		grid-template-columns: 1fr 1fr;
-		border: 1px solid var(--line);
-		border-radius: var(--r-md);
-		overflow: hidden;
-
-		> div {
-			padding: 0.75rem 1rem;
-			display: grid;
-			gap: 0.1rem;
-
-			&:first-child {
-				border-right: 1px solid var(--line);
-			}
+	// La moyenne et son échelle 0–20
+	.note {
+		.valeur {
+			display: flex;
+			flex-wrap: wrap;
+			align-items: baseline;
+			gap: 0 0.35rem;
 		}
-		dt {
-			font-size: 0.8125rem;
+		.moyenne {
+			font-family: var(--display);
+			font-size: 2.5rem;
+			font-weight: 650;
+			letter-spacing: -0.035em;
+			line-height: 1;
+		}
+		.sur {
+			font-size: var(--fs-md);
 			color: var(--ink-2);
 		}
-		dd {
-			margin: 0;
-			font-size: 1.5rem;
-			font-weight: 900;
-			font-variant-numeric: tabular-nums;
-			line-height: 1.1;
+		.legende {
+			margin-left: auto;
+			font-size: var(--fs-xs);
+			color: var(--ink-2);
+		}
+	}
 
-			small {
-				font-size: 0.9375rem;
-				font-weight: 400;
-				color: var(--ink-2);
+	.scale {
+		position: relative;
+		display: flex;
+		gap: 2px;
+		height: 0.5rem;
+		margin-top: 0.9rem;
+
+		.zone {
+			background: color-mix(in oklab, var(--color-base-200) 85%, var(--paper));
+			&:first-child {
+				border-radius: 999px 0 0 999px;
+			}
+			&:nth-child(3) {
+				border-radius: 0 999px 999px 0;
+			}
+		}
+		[data-zone='ajourné'] {
+			flex: 0 0 calc(40% - 2px);
+		}
+		[data-zone='2e session'] {
+			flex: 0 0 calc(10% - 2px);
+		}
+		[data-zone='admis'] {
+			flex: 1 1 auto;
+		}
+
+		.marker {
+			position: absolute;
+			top: 50%;
+			width: 1rem;
+			height: 1rem;
+			border-radius: 50%;
+			background: var(--paper);
+			box-shadow:
+				inset 0 0 0 4px var(--ink),
+				0 1px 3px oklch(0% 0 0 / 0.2);
+			transform: translate(-50%, -50%);
+		}
+	}
+	&[data-statut='ajourné'] [data-zone='ajourné'],
+	&[data-statut='2e session'] [data-zone='2e session'],
+	&[data-statut='admis'] [data-zone='admis'] {
+		background: var(--zone-on);
+	}
+
+	.ticks {
+		position: relative;
+		height: 1.25rem;
+		margin-top: 0.35rem;
+		font-size: 0.75rem;
+		color: var(--ink-2);
+		font-variant-numeric: tabular-nums;
+
+		span {
+			position: absolute;
+			transform: translateX(-50%);
+			&:first-child {
+				transform: none;
+			}
+			&:last-child {
+				transform: translateX(-100%);
 			}
 		}
 	}
 
 	.details {
 		display: grid;
-		gap: 0.6rem;
+		grid-template-columns: 1fr 1fr;
+		gap: 1rem 1.5rem;
 		margin: 0;
 
 		> div {
 			display: grid;
-			grid-template-columns: 7rem 1fr;
-			gap: 0.5rem;
-			font-size: 0.9375rem;
-			padding-bottom: 0.6rem;
-			border-bottom: 1px solid var(--line);
-
-			&:last-child {
-				border-bottom: 0;
-				padding-bottom: 0;
-			}
+			gap: 0.1rem;
+			min-width: 0;
 		}
 		dt {
+			font-size: var(--fs-xs);
 			color: var(--ink-2);
 		}
 		dd {
 			margin: 0;
 			font-weight: 700;
-			font-variant-numeric: tabular-nums;
+			font-size: var(--fs-sm);
+			overflow-wrap: anywhere;
 		}
 	}
 
 	.mot {
-		font-size: 0.9375rem;
+		font-size: var(--fs-sm);
 		color: var(--ink-2);
-		line-height: 1.55;
-		max-width: 52ch;
+		line-height: 1.6;
+		padding-top: 1.25rem;
+		border-top: 1px solid var(--line);
 	}
 
 	.actions {
-		display: grid;
-		gap: 0.5rem;
-		grid-template-columns: 1fr 1fr;
-		padding: 0 1.25rem 1.25rem;
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.25rem 0.5rem;
+		padding: 1.25rem 1.5rem 0;
 
 		@include up($bp-sm) {
-			grid-template-columns: repeat(3, 1fr);
+			padding-inline: 2rem;
 		}
 
-		.btn {
-			height: 2.75rem;
-			min-height: 0;
-			border-radius: var(--r-sm);
-			font-size: 0.9rem;
-			padding-inline: 0.5rem;
+		.button:first-child {
+			flex: 1 1 100%;
+			height: 3rem;
+			margin-bottom: 0.25rem;
 
-			&:first-child {
-				grid-column: 1 / -1;
-				@include up($bp-sm) {
-					grid-column: auto;
-				}
+			@include up($bp-sm) {
+				flex: 0 0 auto;
+				margin: 0 0.5rem 0 0;
+				padding-inline: 1.5rem;
+			}
+		}
+		.button.text {
+			flex: 1 1 0;
+			@include up($bp-sm) {
+				flex: 0 0 auto;
 			}
 		}
 	}
 
 	.feedback {
 		min-height: 1.25rem;
-		padding: 0 1.25rem 0.9rem;
-		font-size: 0.875rem;
+		padding: 0.5rem 1.5rem 1rem;
+		font-size: var(--fs-xs);
+		font-weight: 700;
+		color: var(--teal);
 		text-align: center;
-		color: var(--color-success-content);
+
+		@include up($bp-sm) {
+			text-align: left;
+			padding-inline: 2rem;
+		}
 	}
 }
 
 // Apparition du relevé : un seul mouvement, à l'ouverture
 @media (prefers-reduced-motion: no-preference) {
 	.releve.enter {
-		animation: releve-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+		animation: releve-in 0.4s cubic-bezier(0.2, 0.7, 0.2, 1);
 	}
 	@keyframes releve-in {
 		from {
 			opacity: 0;
-			transform: translateY(12px);
+			transform: translateY(16px) scale(0.985);
+		}
+	}
+	.releve.enter .marker {
+		animation: marker-in 0.7s 0.15s cubic-bezier(0.2, 0.7, 0.2, 1) backwards;
+	}
+	@keyframes marker-in {
+		from {
+			left: 0;
 		}
 	}
 }
@@ -225,45 +286,53 @@
 		padding: 0;
 		background: transparent;
 		box-shadow: none;
-		max-width: 36rem;
+		max-width: 34rem;
 		width: calc(100% - 1.5rem);
 		overflow: visible;
+		max-height: calc(100dvh - 1.5rem);
+		overflow-y: auto;
+		border-radius: var(--r-lg);
 	}
 
 	.close {
 		position: absolute;
-		top: 0.5rem;
-		right: 0.5rem;
+		top: 0.75rem;
+		right: 0.75rem;
 		z-index: 2;
-		width: 2.25rem;
-		height: 2.25rem;
+		width: 2.5rem;
+		height: 2.5rem;
 		border-radius: 50%;
 		border: 0;
-		background: var(--paper);
+		background: color-mix(in oklab, var(--paper) 70%, transparent);
 		color: var(--ink);
 		display: grid;
 		place-items: center;
 		cursor: pointer;
-		box-shadow: 0 1px 3px oklch(0% 0 0 / 0.15);
 
 		&:hover {
-			background: var(--color-base-200);
+			background: var(--paper);
 		}
 	}
 
 	.modal-backdrop {
-		background: oklch(20% 0.02 200 / 0.55);
+		background: oklch(22% 0.03 220 / 0.5);
+		backdrop-filter: blur(2px);
 	}
 
 	// Place pour le bouton de fermeture
-	.officiel {
-		padding-right: 3.25rem;
+	.verdict .meta {
+		padding-right: 2.75rem;
 	}
 }
 
 // Page autonome
 .result-page {
-	padding-block: 2rem 1rem;
+	max-width: calc(34rem + 2 * var(--gutter));
+	padding-block: 1.5rem 0;
+
+	@include up($bp-md) {
+		padding-top: 3rem;
+	}
 
 	.back {
 		display: inline-flex;
@@ -271,17 +340,57 @@
 		gap: 0.35rem;
 		margin-bottom: 1.25rem;
 		font-weight: 700;
+		font-size: var(--fs-sm);
+		color: var(--ink-2);
 		text-decoration: none;
 
 		&:hover {
-			text-decoration: underline;
+			color: var(--teal);
 		}
 	}
 
 	.autre {
-		margin-top: 2rem;
+		margin-top: 1.75rem;
 		text-align: center;
 		color: var(--ink-2);
-		font-size: 0.9375rem;
+		font-size: var(--fs-sm);
+
+		a {
+			font-weight: 700;
+		}
+	}
+}
+
+// Page d'erreur
+.error-page {
+	padding-top: 3rem;
+
+	@include up($bp-md) {
+		padding-top: 6rem;
+	}
+
+	.big-code {
+		font-family: var(--display);
+		font-size: clamp(4.5rem, 3rem + 7vw, 7.5rem);
+		font-weight: 700;
+		letter-spacing: -0.05em;
+		line-height: 0.85;
+		color: var(--mint-tint);
+		-webkit-text-stroke: 1.5px var(--teal);
+	}
+	h1 {
+		margin-top: 1.5rem;
+		font-size: var(--fs-xl);
+	}
+	p {
+		margin-top: 0.75rem;
+		color: var(--ink-2);
+		max-width: 44ch;
+	}
+	.actions {
+		display: flex;
+		flex-wrap: wrap;
+		gap: 0.5rem;
+		margin-top: 1.75rem;
 	}
 }

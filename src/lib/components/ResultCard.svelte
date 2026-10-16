@@ -1,6 +1,5 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
-	import flag from '$lib/assets/images/madagascar.webp';
 	import { copyText, resultUrl, shareResult } from '$lib/utils/share';
 	import type { Result } from '$lib/types';
 
@@ -30,36 +29,31 @@
 		flash((await copyText(resultUrl(annee, result.numero))) ? 'Lien copié' : 'Copie impossible');
 	}
 
+	// Position de la moyenne sur l'échelle 0–20 (seuils : 8 pour la 2e session, 10 pour l'admission)
+	const pos = $derived(Math.min(100, Math.max(0, (result.moyenne / 20) * 100)));
+
 	const moyenne = $derived(
 		result.moyenne.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 	);
 </script>
 
 <article class="releve" class:enter data-statut={result.statut} aria-labelledby="releve-statut">
-	<div class="officiel">
-		<img src={flag} alt="" width="456" height="347" />
-		<div>
-			<b>Repoblikan'i Madagasikara</b>
-			Baccalauréat de l'enseignement général
-		</div>
-		<div class="session">
-			<b>Session {annee}</b>
-			N° {result.numero}
-		</div>
-	</div>
-
-	<div class="band">
+	<header class="verdict">
+		<p class="meta">
+			<span>BAC {annee}</span>
+			<span class="num">N° {result.numero}</span>
+		</p>
 		{#if admis}
 			<p class="statut" id="releve-statut">Admis</p>
 			<p class="sous">Mention {result.mention || 'passable'}</p>
 		{:else if deuxieme}
 			<p class="statut" id="releve-statut">2e session</p>
-			<p class="sous">Convocation aux épreuves de la seconde session</p>
+			<p class="sous">Convoqué aux épreuves de la seconde session</p>
 		{:else}
 			<p class="statut" id="releve-statut">Ajourné</p>
-			<p class="sous">Résultat de la session {annee}</p>
+			<p class="sous">Session {annee} non validée</p>
 		{/if}
-	</div>
+	</header>
 
 	<div class="corps">
 		<div class="identite">
@@ -67,20 +61,33 @@
 			<p class="prenoms">{result.prenoms}</p>
 		</div>
 
-		<dl class="score">
-			<div>
-				<dt>Moyenne générale</dt>
-				<dd>{moyenne} <small>/ 20</small></dd>
+		<div class="note">
+			<p class="valeur">
+				<span class="moyenne num">{moyenne}</span>
+				<span class="sur">/ 20</span>
+				<span class="legende">Moyenne générale</span>
+			</p>
+			<div class="scale" aria-hidden="true">
+				<span class="zone" data-zone="ajourné"></span>
+				<span class="zone" data-zone="2e session"></span>
+				<span class="zone" data-zone="admis"></span>
+				<span class="marker" style="left: {pos}%"></span>
 			</div>
+			<div class="ticks" aria-hidden="true">
+				<span style="left: 0%">0</span>
+				<span style="left: 40%">8</span>
+				<span style="left: 50%">10</span>
+				<span style="left: 100%">20</span>
+			</div>
+		</div>
+
+		<dl class="details">
 			<div>
 				<dt>Série</dt>
 				<dd>{result.serie}</dd>
 			</div>
-		</dl>
-
-		<dl class="details">
 			<div>
-				<dt>Établissement</dt>
+				<dt>Lycée</dt>
 				<dd>{result.ecole}</dd>
 			</div>
 			<div>
@@ -95,28 +102,27 @@
 
 		<p class="mot">
 			{#if admis}
-				Félicitations. Ce relevé atteste de votre admission au baccalauréat, session {annee}.
-				Conservez-le pour vos inscriptions.
+				Félicitations. Gardez ce relevé (lien ou impression) pour vos inscriptions.
 			{:else if deuxieme}
 				Il manque peu de points. Les dates et le lieu des épreuves de seconde session sont
-				communiqués par votre établissement et votre CISCO.
+				communiqués par votre lycée et votre CISCO.
 			{:else}
-				Cette session n'est pas concluante, mais elle ne ferme aucune porte : l'inscription à la
+				Cette session n'est pas validée, mais elle ne ferme aucune porte : l'inscription à la
 				prochaine session est ouverte auprès de votre CISCO.
 			{/if}
 		</p>
 	</div>
 
 	<div class="actions">
-		<button class="btn btn-ink" type="button" onclick={share}>
+		<button class="button" type="button" onclick={share}>
 			<Icon name="share" size={18} />
 			Partager
 		</button>
-		<button class="btn btn-quiet" type="button" onclick={copy}>
+		<button class="button text" type="button" onclick={copy}>
 			<Icon name="link" size={18} />
 			Copier le lien
 		</button>
-		<button class="btn btn-quiet" type="button" onclick={() => window.print()}>
+		<button class="button text" type="button" onclick={() => window.print()}>
 			<Icon name="printer" size={18} />
 			Imprimer
 		</button>

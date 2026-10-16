@@ -29,14 +29,14 @@
 </svelte:head>
 
 <div class="result-page wrap">
-	<a href="/?annee={data.annee}" class="back">
+	<a href="/liste/{data.annee}" class="back">
 		<Icon name="arrow-left" size={18} />
 		Tous les résultats {data.annee}
 	</a>
 
-	<ResultCard result={r} annee={data.annee} />
+	<ResultCard result={r} annee={data.annee} enter />
 
 	<p class="autre">
-		Ce n'est pas vous ? <a href="/?annee={data.annee}">Vérifiez un autre numéro</a>.
+		Ce n'est pas vous ? <a href="/?annee={data.annee}">Vérifier un autre numéro</a>
 	</p>
 </div>
