@@ -1,5 +1,7 @@
 // Jetons de design. La palette reste celle du thème daisyUI « exam » (src/app.css) :
 // on la consomme via var(--color-*), on n'en redéfinit aucune.
+// Règle d'usage : le teal (primary-content) est l'encre d'accent ; le mint (primary) ne
+// s'emploie jamais pur sur une grande surface, seulement en teinte (color-mix) ou en détail.
 $bp-sm: 480px;
 $bp-md: 768px;
 $bp-lg: 1024px;
@@ -11,29 +13,50 @@ $bp-lg: 1024px;
 }
 
 :root {
-	// Encre : texte sur mint = primary-content (teal foncé, AA sur mint et sur blanc).
 	--ink: var(--color-base-content);
-	--ink-2: color-mix(in oklab, var(--color-base-content) 64%, var(--color-base-100));
-	--ink-3: color-mix(in oklab, var(--color-base-content) 42%, var(--color-base-100));
+	--ink-2: color-mix(in oklab, var(--color-base-content) 68%, var(--color-base-100));
+	--ink-3: color-mix(in oklab, var(--color-base-content) 46%, var(--color-base-100));
 	--teal: var(--color-primary-content);
+	--teal-deep: color-mix(in oklab, var(--color-primary-content) 82%, black);
 	--mint: var(--color-primary);
-	--mint-soft: color-mix(in oklab, var(--color-primary) 32%, var(--color-base-100));
-	--paper: oklch(100% 0 0);
-	--line: color-mix(in oklab, var(--color-base-content) 12%, var(--color-base-100));
-	--line-strong: color-mix(in oklab, var(--color-base-content) 24%, var(--color-base-100));
+	--mint-wash: color-mix(in oklab, var(--color-primary) 16%, var(--paper));
+	--mint-tint: color-mix(in oklab, var(--color-primary) 30%, var(--paper));
+	--amber-wash: color-mix(in oklab, var(--color-accent) 42%, var(--paper));
+	--amber: color-mix(in oklab, var(--color-accent) 70%, var(--color-accent-content));
+	--amber-ink: color-mix(in oklab, var(--color-accent-content) 80%, black);
+	--stone-wash: color-mix(in oklab, var(--color-base-200) 70%, var(--paper));
+	--stone: color-mix(in oklab, var(--color-base-content) 22%, var(--color-base-100));
+	--pink: var(--color-secondary-content);
+	--paper: oklch(99.4% 0.002 60);
+	--bg: var(--color-base-100);
+	--line: color-mix(in oklab, var(--color-base-content) 9%, var(--color-base-100));
+	--line-strong: color-mix(in oklab, var(--color-base-content) 20%, var(--color-base-100));
+
+	--display: 'Bricolage Grotesque Variable', 'Lato', system-ui, sans-serif;
+	--text: 'Lato', system-ui, sans-serif;
+
+	// Échelle typographique (≈ 1,25)
+	--fs-xs: 0.8125rem;
+	--fs-sm: 0.9375rem;
+	--fs-md: 1.0625rem;
+	--fs-lg: 1.375rem;
+	--fs-xl: clamp(1.625rem, 1.3rem + 1.4vw, 2.125rem);
+	--fs-2xl: clamp(2.375rem, 1.6rem + 3.6vw, 4rem);
 
 	--r-sm: 0.5rem;
-	--r-md: 0.875rem;
-	--r-lg: 1.25rem;
+	--r-md: 0.75rem;
+	--r-lg: 1.5rem;
 
 	--gutter: 1rem;
-	--wrap: 68rem;
-	--wrap-narrow: 40rem;
+	--wrap: 70rem;
+	--wrap-narrow: 38rem;
 
-	--focus: 0 0 0 3px color-mix(in oklab, var(--teal) 35%, transparent);
-	--shadow-card: 0 1px 2px oklch(0% 0 0 / 0.04), 0 12px 32px -12px oklch(30% 0.04 190 / 0.25);
+	--focus-ring: 0 0 0 3px color-mix(in oklab, var(--teal) 30%, transparent);
+	--shadow-sheet:
+		0 1px 1px oklch(30% 0.03 200 / 0.04), 0 2px 6px -2px oklch(30% 0.03 200 / 0.06),
+		0 24px 48px -24px oklch(30% 0.05 200 / 0.22);
 
 	@include up($bp-md) {
-		--gutter: 1.5rem;
+		--gutter: 2rem;
 	}
 }

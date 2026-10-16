@@ -1,25 +1,21 @@
 <script lang="ts">
 	import { page } from '$app/state';
-	import Icon from '$lib/components/Icon.svelte';
-	import flag from '$lib/assets/images/madagascar.webp';
 
-	const onEtab = $derived(page.url.pathname.startsWith('/etablissements'));
+	const path = $derived(page.url.pathname);
 </script>
 
 <header class="site-header">
 	<div class="wrap">
-		<a href="/" class="brand">
-			<img src={flag} alt="" width="456" height="347" />
-			<span>
-				Résultats du BAC
-				<small>Madagascar</small>
-			</span>
+		<a href="/" class="brand" aria-label="Résultats du BAC, accueil">
+			<span class="mark" aria-hidden="true">20</span>
+			Résultats du BAC
 		</a>
 		<nav aria-label="Navigation principale">
-			<a href="/etablissements" aria-current={onEtab ? 'page' : undefined}>
-				<Icon name="school" size={18} />
-				Par établissement
-			</a>
+			<a href="/liste" aria-current={path.startsWith('/liste') ? 'page' : undefined}>Parcourir</a>
+			<a
+				href="/etablissements"
+				aria-current={path.startsWith('/etablissements') ? 'page' : undefined}>Lycées</a
+			>
 		</nav>
 	</div>
 </header>

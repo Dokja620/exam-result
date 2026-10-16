@@ -8,11 +8,12 @@ html {
 
 body {
 	margin: 0;
-	font-family: 'Lato', system-ui, sans-serif;
+	font-family: var(--text);
+	font-size: var(--fs-md);
 	font-weight: 400;
 	line-height: 1.5;
 	color: var(--ink);
-	background: var(--color-base-100);
+	background: var(--bg);
 	max-width: 100vw;
 	overflow-x: hidden;
 	-webkit-font-smoothing: antialiased;
@@ -22,21 +23,25 @@ h1,
 h2,
 h3,
 h4 {
-	font-weight: 900;
-	line-height: 1.1;
-	letter-spacing: -0.015em;
+	font-family: var(--display);
+	font-weight: 700;
+	line-height: 1.05;
+	letter-spacing: -0.025em;
 	margin: 0;
 	text-wrap: balance;
 }
 
 h1 {
-	font-size: clamp(1.9rem, 1.2rem + 3.2vw, 3rem);
+	font-size: var(--fs-2xl);
+	font-weight: 750;
+	letter-spacing: -0.035em;
 }
 h2 {
-	font-size: clamp(1.35rem, 1.1rem + 1.2vw, 1.75rem);
+	font-size: var(--fs-xl);
 }
 h3 {
-	font-size: 1.125rem;
+	font-size: var(--fs-md);
+	letter-spacing: -0.01em;
 }
 
 p {
@@ -46,7 +51,7 @@ p {
 a {
 	color: var(--teal);
 	text-decoration-thickness: 1px;
-	text-underline-offset: 0.15em;
+	text-underline-offset: 0.18em;
 }
 
 :focus-visible {
@@ -79,103 +84,149 @@ a {
 	box-sizing: border-box;
 }
 .wrap-narrow {
-	max-width: var(--wrap-narrow);
+	max-width: calc(var(--wrap-narrow) + 2 * var(--gutter));
 }
 
-// Pastille de statut (liste, page établissement)
-.chip {
+// Statut en ligne : un point de couleur + le mot (liste, établissements)
+.statut-tag {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.4em;
-	padding: 0.15em 0.6em 0.15em 0.5em;
-	border-radius: 999px;
-	font-size: 0.8125rem;
-	font-weight: 700;
-	line-height: 1.4;
+	gap: 0.45em;
+	font-size: var(--fs-sm);
 	white-space: nowrap;
-	background: var(--chip-bg, var(--color-base-200));
-	color: var(--chip-fg, var(--ink-2));
+	color: var(--ink-2);
 
 	&::before {
 		content: '';
-		width: 0.5em;
-		height: 0.5em;
+		width: 0.55em;
+		height: 0.55em;
 		border-radius: 50%;
-		background: var(--chip-dot, currentColor);
+		background: var(--dot, var(--stone));
+		flex: none;
 	}
-
 	&[data-statut='admis'] {
-		--chip-bg: color-mix(in oklab, var(--color-success) 22%, var(--paper));
-		--chip-fg: var(--color-success-content);
-		--chip-dot: var(--color-success);
+		--dot: var(--teal);
+		color: var(--teal);
+		font-weight: 700;
 	}
 	&[data-statut='2e session'] {
-		--chip-bg: color-mix(in oklab, var(--color-warning) 28%, var(--paper));
-		--chip-fg: var(--color-warning-content);
-		--chip-dot: var(--color-warning);
-	}
-	&[data-statut='ajourné'] {
-		--chip-bg: var(--color-base-200);
-		--chip-fg: var(--ink-2);
-		--chip-dot: var(--ink-3);
+		--dot: var(--amber);
+		color: var(--amber-ink);
+		font-weight: 700;
 	}
 }
 
-// Boutons : on s'appuie sur daisyUI .btn, et on fixe le ton « encre » du site
-.btn {
-	font-weight: 700;
-	gap: 0.45rem;
-}
-.btn-ink {
+// Boutons maison (on n'utilise pas .btn de daisyUI)
+.button {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 0.5rem;
+	height: 2.75rem;
+	padding-inline: 1.1rem;
+	border: 0;
+	border-radius: var(--r-md);
+	font: 700 var(--fs-sm) / 1 var(--text);
+	text-decoration: none;
+	cursor: pointer;
+	white-space: nowrap;
 	background: var(--teal);
-	border-color: var(--teal);
 	color: var(--paper);
+	transition:
+		background-color 0.15s,
+		color 0.15s;
+
 	&:hover {
-		background: color-mix(in oklab, var(--teal) 88%, black);
-		border-color: color-mix(in oklab, var(--teal) 88%, black);
+		background: var(--teal-deep);
+	}
+	&:disabled {
+		cursor: default;
+		opacity: 0.55;
+	}
+
+	&.ghost {
+		background: transparent;
+		color: var(--ink);
+		box-shadow: inset 0 0 0 1px var(--line-strong);
+
+		&:hover:not(:disabled) {
+			background: var(--mint-wash);
+			box-shadow: inset 0 0 0 1px color-mix(in oklab, var(--teal) 35%, var(--line-strong));
+		}
+	}
+	&.text {
+		background: transparent;
+		color: var(--teal);
+		padding-inline: 0.6rem;
+
+		&:hover:not(:disabled) {
+			background: var(--mint-wash);
+		}
 	}
 }
-.btn-quiet {
-	background: var(--paper);
-	border-color: var(--line-strong);
+
+// Liste déroulante maison
+.field-select {
+	appearance: none;
+	-webkit-appearance: none;
+	height: 2.75rem;
+	padding: 0 2.25rem 0 0.9rem;
+	border: 0;
+	border-radius: var(--r-md);
+	box-shadow: inset 0 0 0 1px var(--line-strong);
+	background: var(--paper)
+		url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23656a75' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6l6 -6'/%3E%3C/svg%3E")
+		no-repeat right 0.75rem center;
+	font: 700 var(--fs-sm) / 1 var(--text);
 	color: var(--ink);
+	cursor: pointer;
+	max-width: 100%;
+
 	&:hover {
-		background: var(--color-base-200);
-		border-color: var(--line-strong);
+		box-shadow: inset 0 0 0 1px var(--ink-3);
+	}
+	&:focus-visible {
+		outline: none;
+		box-shadow:
+			inset 0 0 0 1px var(--teal),
+			var(--focus-ring);
 	}
 }
 
 // Message d'état (vide, erreur, hors-ligne)
 .notice {
 	display: grid;
-	justify-items: center;
-	text-align: center;
-	gap: 0.5rem;
-	padding: 2rem 1rem;
-	border: 1px dashed var(--line-strong);
-	border-radius: var(--r-md);
+	justify-items: start;
+	gap: 0.4rem;
+	padding: 2rem 0;
 	color: var(--ink-2);
+	max-width: 36rem;
 
 	.icon {
 		color: var(--ink-3);
+		margin-bottom: 0.25rem;
 	}
 	strong {
+		font-family: var(--display);
+		font-size: var(--fs-lg);
+		font-weight: 650;
+		letter-spacing: -0.015em;
 		color: var(--ink);
 	}
-	.btn {
-		margin-top: 0.5rem;
+	.button {
+		margin-top: 0.75rem;
 	}
 }
 
 // Squelette de chargement
 .skeleton-row {
-	height: 3.25rem;
-	border-radius: var(--r-sm);
+	height: 3.5rem;
+	border-bottom: 1px solid var(--line);
 	background: linear-gradient(
 		90deg,
-		var(--color-base-200) 25%,
-		var(--color-base-300) 50%,
-		var(--color-base-200) 75%
+		transparent 25%,
+		color-mix(in oklab, var(--color-base-200) 70%, transparent) 50%,
+		transparent 75%
 	);
 	background-size: 200% 100%;
 	animation: shimmer 1.4s linear infinite;
