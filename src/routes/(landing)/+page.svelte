@@ -3,20 +3,12 @@
 	import Hero from '$lib/landing/hero.svelte';
 	import Icon from '$lib/components/Icon.svelte';
 	import Modal from '$lib/components/table/Modal.svelte';
-	import { goto, replaceState } from '$app/navigation';
-	import { browser } from '$app/environment';
+	import { goto, invalidateAll, replaceState } from '$app/navigation';
 	import { resultPath } from '$lib/utils/share';
-	import { YearData } from '$lib/utils/dataset.svelte';
 	import { fmtInt } from '$lib/stats';
 	import type { Result } from '$lib/types';
 
 	let { data } = $props();
-
-	// Jeu de données de l'année : sert aux chiffres et à la vérification hors-ligne
-	const ds = new YearData();
-	$effect(() => {
-		if (browser) ds.load(data.annee);
-	});
 
 	// ---- Candidat sélectionné (modale) + URL partageable ?n= ----
 	let selected = $state<Result | null>(data.candidat);
@@ -35,20 +27,26 @@
 		replaceState(url, {});
 	}
 
-	function checkNumero(numero: string) {
+	// Vérification d'un numéro : une seule requête (mise en cache par le service worker)
+	let checking = $state(false);
+	async function checkNumero(numero: string) {
 		const n = numero.trim();
-		if (!n) return;
-		if (!ds.rows.length) {
-			// Données pas encore là : la page autonome répond côté serveur
+		if (!n || checking) return;
+		checking = true;
+		try {
+			const res = await fetch(`/api/results?annee=${data.annee}&n=${encodeURIComponent(n)}`);
+			if (res.ok) {
+				selected = (await res.json()) as Result;
+				notFound = '';
+				syncUrl(n);
+			} else if (res.status === 404) notFound = n;
+			else throw new Error(`HTTP ${res.status}`);
+		} catch {
+			// Réseau indisponible : la page autonome (ou son cache hors-ligne) prend le relais
 			goto(resultPath(data.annee, n));
-			return;
+		} finally {
+			checking = false;
 		}
-		const r = ds.rows.find((x) => x.numero === n);
-		if (r) {
-			selected = r;
-			notFound = '';
-			syncUrl(r.numero);
-		} else notFound = n;
 	}
 
 	function closeModal() {
@@ -63,7 +61,7 @@
 		goto(url, { keepFocus: true, noScroll: true });
 	}
 
-	const total = $derived(data.meta.totaux[String(data.annee)] ?? ds.rows.length);
+	const total = $derived(data.meta.totaux[String(data.annee)] ?? 0);
 </script>
 
 <svelte:head>
@@ -78,7 +76,7 @@
 	<Hero
 		annees={data.meta.annees}
 		annee={data.annee}
-		loading={ds.loading && !ds.error}
+		loading={checking}
 		{notFound}
 		examples={data.meta.examples?.[String(data.annee)]}
 		onCheck={checkNumero}
@@ -86,19 +84,16 @@
 	/>
 
 	<aside class="home-side">
-		{#if ds.rows.length}
-			<Stats rows={ds.rows} annee={data.annee} />
-		{:else if ds.error}
+		{#if data.stats}
+			<Stats stats={data.stats} annee={data.annee} />
+		{:else}
 			<div class="notice" role="alert">
 				<Icon name="wifi-off" size={24} />
 				<strong>Les chiffres {data.annee} n'ont pas pu être chargés.</strong>
-				<span>{ds.error}</span>
-				<button class="button ghost" type="button" onclick={() => ds.load(data.annee)}
-					>Réessayer</button
+				<span>Vérifiez votre connexion puis réessayez.</span>
+				<button class="button ghost" type="button" onclick={() => invalidateAll()}>Réessayer</button
 				>
 			</div>
-		{:else}
-			<div class="overview-skeleton" aria-hidden="true"></div>
 		{/if}
 
 		<nav class="explore" aria-label="Explorer les résultats">

@@ -10,12 +10,6 @@
 	}
 }
 
-.overview-skeleton {
-	height: 15rem;
-	border-radius: var(--r-lg);
-	background: color-mix(in srgb, var(--color-base-200) 45%, var(--bg));
-}
-
 // La session en chiffres : la carte drapeau, le taux en grand, une barre de répartition
 .overview {
 	@include flag-card;

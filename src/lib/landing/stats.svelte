@@ -1,11 +1,8 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
-	import { computeStats, fmtInt, fmtPct } from '$lib/stats';
-	import type { Result } from '$lib/types';
+	import { fmtInt, fmtPct, type SessionStats } from '$lib/stats';
 
-	let { rows, annee }: { rows: Result[]; annee: number } = $props();
-
-	const stats = $derived(computeStats(rows));
+	let { stats, annee }: { stats: SessionStats; annee: number } = $props();
 	const total = $derived(stats.global.total || 1);
 	const parts = $derived([
 		{ key: 'admis', label: 'Admis', n: stats.global.admis },

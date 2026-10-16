@@ -36,6 +36,8 @@ export function computeStats(rows: Result[]) {
 	return { global, parSerie, parProvince, mentions, deuxieme, ajournes };
 }
 
+export type SessionStats = ReturnType<typeof computeStats>;
+
 export interface EcoleRate extends Rate {
 	cisco: string;
 	province: string;

@@ -173,7 +173,7 @@ src/lib/types.ts                  types et listes de valeurs (séries, provinces
 src/lib/stats.ts                  calcul des statistiques
 src/lib/utils/{normalize,csv,share}.ts
 src/lib/landing/                  hero (saisie du numéro), stats (la session en chiffres)
-src/lib/utils/dataset.svelte.ts   chargement client d'une année (partagé accueil / liste)
+src/lib/utils/dataset.svelte.ts   chargement client du jeu compact d'une année (liste)
 src/lib/components/ResultCard.svelte  le relevé (modale et page autonome)
 src/lib/components/Popover.svelte  panneau ancré / feuille mobile (filtres, partage)
 src/lib/components/Qr.svelte      QR code (qrcode-generator, importé à la demande)
