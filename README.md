@@ -3,11 +3,15 @@
 Site de consultation des résultats du Baccalauréat malgache. Statique, sans base de
 données : toutes les données vivent dans des fichiers JSON embarqués au build.
 SvelteKit (Svelte 5, runes) + SCSS, exécuté avec Bun, déployé sur Cloudflare (Workers / Pages).
-Police Lato auto-hébergée (Fontsource), aucune bibliothèque d'UI ni de graphiques supplémentaire.
+Polices auto-hébergées (Fontsource) : Bricolage Grotesque pour les titres et les chiffres, Lato pour le texte.
+Aucune bibliothèque d'UI ni de graphiques supplémentaire.
+
+Site de démonstration indépendant (Ohayo Dev and Design), sans lien avec le ministère : les données sont fictives.
 
 Fonctionnalités :
 
-- **Vérifier mon résultat** : saisie du numéro de candidat dans le hero → fiche directe.
+- **Vérifier mon résultat** : l'accueil se concentre sur la saisie du numéro (six cases) et la
+  session en chiffres ; le relevé s'ouvre en modale.
 - **Recherche instantanée** par numéro ou nom/prénoms (insensible à la casse et aux accents, debounce).
 - **Filtres** : série, province, observation (admis / 2e session / ajourné), mention.
 - **Relevé candidat** : modale accessible (`Esc`, focus piégé) sur la page d'accueil, et page
@@ -19,8 +23,9 @@ Fonctionnalités :
 - **Statistiques** : taux de réussite global, par série, par province, répartition des mentions
   (barres CSS, aucune lib de graphiques), repliables.
 - **Exports** : PDF (impression navigateur de la liste filtrée) et CSV (`;`, UTF-8 BOM, prêt pour Excel).
-- **Liste** : tableau à partir de 768 px, cartes en dessous ; barre de filtres collante ;
-  pagination (50 lignes/page).
+- **Parcourir** : `/liste/<annee>` (recherche, filtres, exports) ; tableau à partir de 768 px,
+  lignes compactes en dessous ; barre de filtres collante ; pagination (50 lignes/page).
+  `?q=` pré-remplit la recherche, `?n=` ouvre un relevé.
 - **Hors-ligne** : service worker (`src/service-worker.ts`) – assets pré-cachés, JSON des résultats
   en _stale-while-revalidate_. Un candidat peut rouvrir son résultat sans réseau.
 - **Sélecteur d'année** : un fichier JSON par année.
@@ -117,10 +122,12 @@ src/lib/server/data.ts            chargement / recherche côté serveur
 src/lib/types.ts                  types et listes de valeurs (séries, provinces…)
 src/lib/stats.ts                  calcul des statistiques
 src/lib/utils/{normalize,csv,share}.ts
-src/lib/landing/                  hero, stats, table (tableau / cartes)
+src/lib/landing/                  hero (saisie du numéro), stats (la session en chiffres)
+src/lib/utils/dataset.svelte.ts   chargement client d'une année (partagé accueil / liste)
 src/lib/components/ResultCard.svelte  le relevé (modale et page autonome)
 src/lib/components/Icon.svelte    icônes SVG intégrées (aucun appel réseau)
-src/lib/components/table/         FilterBar, Pagination, Modal, PDFexport, CSVexport
+src/lib/components/table/         ResultsList, FilterBar, Pagination, Modal, PDFexport, CSVexport
+src/routes/liste/[annee]          parcourir tous les résultats
 src/routes/resultat/[annee]/[numero]  page autonome d'un résultat (SSR + Open Graph)
 src/routes/etablissements/[annee] résultats par lycée
 src/routes/api/results/+server.ts endpoint JSON
