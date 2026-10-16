@@ -2,7 +2,7 @@
 	import Stats from '$lib/landing/stats.svelte';
 	import Hero from '$lib/landing/hero.svelte';
 	import Icon from '$lib/components/Icon.svelte';
-	import Modal from '$lib/components/table/Modal.svelte';
+	import Modal, { preloadResultCard } from '$lib/components/table/Modal.svelte';
 	import { goto, invalidateAll, replaceState } from '$app/navigation';
 	import { resultPath } from '$lib/utils/share';
 	import { fmtInt } from '$lib/stats';
@@ -34,7 +34,11 @@
 		if (!n || checking) return;
 		checking = true;
 		try {
-			const res = await fetch(`/api/results?annee=${data.annee}&n=${encodeURIComponent(n)}`);
+			// Le relevé (composant chargé à la demande) arrive en même temps que la réponse
+			const [res] = await Promise.all([
+				fetch(`/api/results?annee=${data.annee}&n=${encodeURIComponent(n)}`),
+				preloadResultCard()
+			]);
 			if (res.ok) {
 				selected = (await res.json()) as Result;
 				notFound = '';

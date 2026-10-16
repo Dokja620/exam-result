@@ -6,10 +6,10 @@
 		facebookUrl,
 		resultPath,
 		resultUrl,
+		shareImageName,
 		shareResult,
 		whatsappUrl
 	} from '$lib/utils/share';
-	import { shareImageBlob, shareImageName } from '$lib/utils/share-image';
 	import Popover from '$lib/components/Popover.svelte';
 	import Qr from '$lib/components/Qr.svelte';
 	import type { Result } from '$lib/types';
@@ -41,7 +41,10 @@
 	function prepareImage(): Promise<Blob | null> {
 		if (!image || imageFor !== result.id) {
 			imageFor = result.id;
-			image = shareImageBlob({ result, annee, site: window.location.host }).catch(() => null);
+			// Le dessin au <canvas> n'est chargé qu'à l'ouverture du menu de partage
+			image = import('$lib/utils/share-image')
+				.then((m) => m.shareImageBlob({ result, annee, site: window.location.host }))
+				.catch(() => null);
 		}
 		return image;
 	}

@@ -5,6 +5,11 @@ export function resultPath(annee: number, numero: string): string {
 	return `/resultat/${annee}/${encodeURIComponent(numero)}`;
 }
 
+/** Nom du fichier de l'image de partage. */
+export function shareImageName(r: Result, annee: number): string {
+	return `resultat-bac-${annee}-${r.numero}.png`;
+}
+
 export function resultUrl(annee: number, numero: string): string {
 	return new URL(resultPath(annee, numero), window.location.origin).toString();
 }

@@ -342,7 +342,3 @@ export async function shareImageBlob(opts: ShareImageOptions): Promise<Blob> {
 		canvas.toBlob((b) => (b ? resolve(b) : reject(new Error('toBlob'))), 'image/png')
 	);
 }
-
-export function shareImageName(r: Result, annee: number) {
-	return `resultat-bac-${annee}-${r.numero}.png`;
-}

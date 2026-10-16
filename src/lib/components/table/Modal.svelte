@@ -1,6 +1,21 @@
+<script lang="ts" module>
+	/**
+	 * Le relevé (partage, impression, QR) n'est chargé qu'au besoin : l'accueil et la liste n'en
+	 * paient le poids qu'à l'ouverture d'une modale. `preloadResultCard` l'anticipe (saisie d'un
+	 * numéro, survol d'une ligne).
+	 */
+	let cardModule: ReturnType<typeof load> | undefined;
+	function load() {
+		return import('$lib/components/ResultCard.svelte');
+	}
+	export function preloadResultCard() {
+		cardModule ??= load();
+		return cardModule;
+	}
+</script>
+
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
-	import ResultCard from '$lib/components/ResultCard.svelte';
 	import type { Result } from '$lib/types';
 
 	let {
@@ -24,7 +39,9 @@
 			<button class="close" type="button" aria-label="Fermer" onclick={() => modal?.close()}>
 				<Icon name="x" size={18} />
 			</button>
-			<ResultCard result={selected} {annee} enter />
+			{#await preloadResultCard() then { default: ResultCard }}
+				<ResultCard result={selected} {annee} enter />
+			{/await}
 		</div>
 		<form method="dialog" class="modal-backdrop">
 			<button>Fermer</button>

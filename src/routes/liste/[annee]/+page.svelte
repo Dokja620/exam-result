@@ -1,6 +1,6 @@
 <script lang="ts">
 	import ResultsList from '$lib/components/table/ResultsList.svelte';
-	import Modal from '$lib/components/table/Modal.svelte';
+	import Modal, { preloadResultCard } from '$lib/components/table/Modal.svelte';
 	import { goto, replaceState } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { YearData } from '$lib/utils/dataset.svelte';
@@ -26,7 +26,8 @@
 		replaceState(url, {});
 	}
 
-	function select(r: Result) {
+	async function select(r: Result) {
+		await preloadResultCard();
 		selected = r;
 		syncUrl(r.numero);
 	}
