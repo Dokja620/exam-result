@@ -1,0 +1,136 @@
+@use '../shared';
+@use 'screenshift/scss' as mq;
+
+#stats {
+	display: grid;
+	gap: shared.$spacing;
+
+	.summary {
+		display: grid;
+		grid-template-columns: repeat(4, 1fr);
+		gap: shared.$spacing;
+
+		@include mq.max-mq('mobile-lg') {
+			grid-template-columns: repeat(2, 1fr);
+		}
+	}
+
+	.kpi {
+		display: grid;
+		gap: 2px;
+		padding: shared.$spacing;
+		border-radius: shared.$spacing;
+		background: color-mix(in srgb, var(--color-primary), transparent 75%);
+
+		&:first-child {
+			background: linear-gradient(
+				90deg,
+				color-mix(in srgb, var(--color-success), transparent 45%) var(--pct, 0%),
+				color-mix(in srgb, var(--color-primary), transparent 75%) var(--pct, 0%)
+			);
+		}
+
+		.value {
+			font-size: 1.563rem;
+			font-weight: 900;
+			line-height: 1.1;
+		}
+
+		.kpi-label {
+			font-size: 0.85rem;
+			opacity: 0.8;
+		}
+	}
+
+	.stats-toggle {
+		width: fit-content;
+		gap: shared.$spacing-xs;
+	}
+
+	.details {
+		display: grid;
+		gap: shared.$spacing;
+
+		h5 {
+			text-align: center;
+		}
+	}
+
+	.grid {
+		display: grid;
+		grid-template-columns: repeat(3, 1fr);
+		gap: shared.$spacing-lg;
+
+		@include mq.max-mq('mobile-lg') {
+			grid-template-columns: 1fr;
+		}
+	}
+
+	.block {
+		display: grid;
+		gap: shared.$spacing-xs;
+		align-content: start;
+
+		h6 {
+			padding-bottom: 4px;
+			border-bottom: 1px solid color-mix(in srgb, currentColor, transparent 85%);
+		}
+
+		ul {
+			display: grid;
+			gap: 6px;
+		}
+
+		li {
+			display: grid;
+			grid-template-columns: 9ch 1fr auto;
+			align-items: center;
+			gap: shared.$spacing-xs;
+			text-transform: capitalize;
+			font-size: 0.9rem;
+		}
+
+		.bar {
+			display: block;
+			height: 10px;
+			border-radius: 5px;
+			background: hsl(0 0% 0% / 0.07);
+			overflow: hidden;
+
+			> span {
+				display: block;
+				height: 100%;
+				border-radius: 5px;
+				background: var(--color-success);
+				transition: width 0.4s ease-out;
+			}
+		}
+
+		[data-mention] .bar > span {
+			background: var(--underline, var(--color-success));
+		}
+
+		.num {
+			font-variant-numeric: tabular-nums;
+			white-space: nowrap;
+
+			small {
+				opacity: 0.6;
+			}
+		}
+	}
+
+	// Même code couleur que le tableau
+	[data-mention='très bien'] {
+		--underline: hsla(106, 100%, 40%, 0.9);
+	}
+	[data-mention='bien'] {
+		--underline: hsla(78, 100%, 40%, 0.9);
+	}
+	[data-mention='assez bien'] {
+		--underline: hsla(49, 100%, 45%, 0.9);
+	}
+	[data-mention='passable'] {
+		--underline: hsla(0, 0%, 60%, 0.9);
+	}
+}
