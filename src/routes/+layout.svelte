@@ -4,10 +4,10 @@
 	import '../app.css';
 	import '../scss/global.scss';
 
-	import '@fontsource/lato/400.css';
-	import '@fontsource/lato/700.css';
-	import '@fontsource/lato/900.css';
-	import '@fontsource-variable/bricolage-grotesque/opsz.css';
+	import '@fontsource/poppins/latin-400.css';
+	import '@fontsource/poppins/latin-500.css';
+	import '@fontsource/poppins/latin-600.css';
+	import '@fontsource/poppins/latin-700.css';
 	let { children } = $props();
 </script>
 

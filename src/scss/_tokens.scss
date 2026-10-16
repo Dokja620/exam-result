@@ -1,7 +1,8 @@
-// Jetons de design. La palette reste celle du thème daisyUI « exam » (src/app.css) :
-// on la consomme via var(--color-*), on n'en redéfinit aucune.
-// Règle d'usage : le teal (primary-content) est l'encre d'accent ; le mint (primary) ne
-// s'emploie jamais pur sur une grande surface, seulement en teinte (color-mix) ou en détail.
+// Jetons de design. La palette brute vit dans le thème daisyUI « exam » (src/app.css), reprise
+// du site v1 : bleu ciel (primary), rouge et vert du drapeau (secondary, accent), noir riche
+// (base-content) sur fumée blanche (base-100). Ici on la nomme et on en dérive les teintes.
+// Règles : jamais de texte blanc sur le bleu (il est clair) ; le bleu foncé sert aux liens et
+// aux anneaux de focus ; le rouge ne sert qu'aux accents du drapeau, jamais à un statut.
 $bp-sm: 480px;
 $bp-md: 768px;
 $bp-lg: 1024px;
@@ -12,28 +13,84 @@ $bp-lg: 1024px;
 	}
 }
 
-:root {
-	--ink: var(--color-base-content);
-	--ink-2: color-mix(in oklab, var(--color-base-content) 68%, var(--color-base-100));
-	--ink-3: color-mix(in oklab, var(--color-base-content) 46%, var(--color-base-100));
-	--teal: var(--color-primary-content);
-	--teal-deep: color-mix(in oklab, var(--color-primary-content) 82%, black);
-	--mint: var(--color-primary);
-	--mint-wash: color-mix(in oklab, var(--color-primary) 16%, var(--paper));
-	--mint-tint: color-mix(in oklab, var(--color-primary) 30%, var(--paper));
-	--amber-wash: color-mix(in oklab, var(--color-accent) 42%, var(--paper));
-	--amber: color-mix(in oklab, var(--color-accent) 70%, var(--color-accent-content));
-	--amber-ink: color-mix(in oklab, var(--color-accent-content) 80%, black);
-	--stone-wash: color-mix(in oklab, var(--color-base-200) 70%, var(--paper));
-	--stone: color-mix(in oklab, var(--color-base-content) 22%, var(--color-base-100));
-	--pink: var(--color-secondary-content);
-	--paper: oklch(99.4% 0.002 60);
-	--bg: var(--color-base-100);
-	--line: color-mix(in oklab, var(--color-base-content) 9%, var(--color-base-100));
-	--line-strong: color-mix(in oklab, var(--color-base-content) 20%, var(--color-base-100));
+// Carte signature v1 : feuille blanche, onglet rouge en haut à gauche, vert en bas à droite.
+// Le fond de la carte est peint par ::before et les deux onglets par ::after (un seul
+// pseudo-élément, masqué en deux formes), le tout dans un contexte isolé : les onglets restent
+// sous la carte même pendant une animation (opacity / transform).
+@mixin flag-card($bg: var(--paper)) {
+	position: relative;
+	isolation: isolate;
+	background: transparent;
 
-	--display: 'Bricolage Grotesque Variable', 'Lato', system-ui, sans-serif;
-	--text: 'Lato', system-ui, sans-serif;
+	&::before,
+	&::after {
+		content: '';
+		position: absolute;
+		pointer-events: none;
+	}
+	&::before {
+		inset: 0;
+		z-index: -1;
+		border-radius: inherit;
+		background: $bg;
+		box-shadow: var(--shadow-card);
+	}
+	&::after {
+		inset: calc(-1 * var(--tab-offset));
+		z-index: -2;
+		background:
+			linear-gradient(var(--red), var(--red)) top left / var(--tab-w) var(--tab-h) no-repeat,
+			linear-gradient(var(--green), var(--green)) bottom right / var(--tab-w) var(--tab-h) no-repeat;
+		mask:
+			var(--tab-tl) top left / var(--tab-w) var(--tab-h) no-repeat,
+			var(--tab-br) bottom right / var(--tab-w) var(--tab-h) no-repeat;
+	}
+}
+
+:root {
+	// Palette
+	--rich-black: var(--color-base-content);
+	--white-smoke: var(--color-base-100);
+	--paper: #fff;
+	--blue: var(--color-primary);
+	--blue-hover: color-mix(in srgb, var(--color-primary) 86%, var(--rich-black));
+	--blue-dark: hsl(194 66% 30%); // 5,7:1 sur fumée blanche : liens, focus, accents texte
+	--blue-wash: color-mix(in srgb, var(--color-primary) 16%, var(--paper));
+	--red: var(--color-secondary);
+	--green: var(--color-accent);
+
+	// Statuts (l'ajourné reste neutre, jamais rouge)
+	--admis: var(--color-success); // point #29af00
+	--admis-ink: var(--color-success-content); // 6,1:1 sur la teinte verte
+	--admis-pill: color-mix(in srgb, #32d800 25%, transparent);
+	--admis-wash: color-mix(in srgb, var(--color-accent) 10%, var(--paper));
+	--amber: var(--color-warning);
+	--amber-ink: var(--color-warning-content);
+	--amber-pill: color-mix(in srgb, var(--color-warning) 28%, transparent);
+	--amber-wash: color-mix(in srgb, var(--color-warning) 16%, var(--paper));
+	--stone: hsl(0 0% 66%);
+	--stone-pill: hsl(0 0% 0% / 0.07);
+	--stone-wash: color-mix(in srgb, var(--color-base-200) 70%, var(--paper));
+
+	// Mentions : trait de surligneur
+	--hl-tres-bien: hsl(106 100% 56% / 0.84);
+	--hl-bien: hsl(78 100% 56% / 0.74);
+	--hl-assez-bien: hsl(49 100% 54% / 0.59);
+	--hl-passable: hsl(0 0% 66% / 0.53);
+
+	// Encre et surfaces
+	--ink: var(--rich-black);
+	--ink-2: color-mix(in srgb, var(--rich-black) 72%, var(--white-smoke));
+	--ink-3: color-mix(in srgb, var(--rich-black) 58%, var(--white-smoke));
+	--bg: var(--white-smoke);
+	--line: color-mix(in srgb, var(--rich-black) 9%, var(--white-smoke));
+	--line-strong: color-mix(in srgb, var(--rich-black) 20%, var(--white-smoke));
+	--field-line: color-mix(in srgb, var(--rich-black), transparent 65%);
+	--field-line-focus: color-mix(in srgb, var(--rich-black), transparent 45%);
+	--zebra: hsl(0 0% 0% / 0.05);
+
+	--display: 'Poppins', system-ui, sans-serif;
+	--text: 'Poppins', system-ui, sans-serif;
 
 	// Échelle typographique (≈ 1,25)
 	--fs-xs: 0.8125rem;
@@ -44,17 +101,22 @@ $bp-lg: 1024px;
 	--fs-2xl: clamp(2.375rem, 1.6rem + 3.6vw, 4rem);
 
 	--r-sm: 0.5rem;
-	--r-md: 0.75rem;
-	--r-lg: 1.5rem;
+	--r-md: 0.67rem;
+	--r-lg: 1rem;
 
 	--gutter: 1rem;
 	--wrap: 70rem;
 	--wrap-narrow: 38rem;
 
-	--focus-ring: 0 0 0 3px color-mix(in oklab, var(--teal) 30%, transparent);
-	--shadow-sheet:
-		0 1px 1px oklch(30% 0.03 200 / 0.04), 0 2px 6px -2px oklch(30% 0.03 200 / 0.06),
-		0 24px 48px -24px oklch(30% 0.05 200 / 0.22);
+	--focus-ring: 0 0 0 3px color-mix(in srgb, var(--blue-dark) 35%, transparent);
+	--shadow-card: 0 4px 6px hsl(0 0% 0% / 0.12), 0 5px 15px hsl(0 0% 0% / 0.14);
+
+	// Onglets du drapeau (70 × 50 px, rayons 1,5em / 4px)
+	--tab-w: 70px;
+	--tab-h: 50px;
+	--tab-offset: 0.67em;
+	--tab-tl: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 50'%3E%3Cpath d='M24 0H66a4 4 0 0 1 4 4V46a4 4 0 0 1-4 4H4a4 4 0 0 1-4-4V24A24 24 0 0 1 24 0Z'/%3E%3C/svg%3E");
+	--tab-br: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 70 50'%3E%3Cpath d='M4 0H66a4 4 0 0 1 4 4V26A24 24 0 0 1 46 50H4a4 4 0 0 1-4-4V4a4 4 0 0 1 4-4Z'/%3E%3C/svg%3E");
 
 	@include up($bp-md) {
 		--gutter: 2rem;

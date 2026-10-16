@@ -30,7 +30,11 @@ main {
 		text-decoration: none;
 		white-space: nowrap;
 
-		// Repère : le « 20 » de la note sur 20, en pastille teal
+		@media (max-width: 419px) {
+			font-size: 1rem;
+		}
+
+		// Repère : le « 20 » de la note sur 20, en pastille bleue (encre noire)
 		.mark {
 			align-self: center;
 			display: inline-grid;
@@ -38,10 +42,10 @@ main {
 			width: 1.75rem;
 			height: 1.75rem;
 			border-radius: 0.5rem;
-			background: var(--teal);
-			color: var(--mint);
+			background: var(--blue);
+			color: var(--ink);
 			font-size: 0.8125rem;
-			font-weight: 800;
+			font-weight: 700;
 			letter-spacing: -0.04em;
 			margin-right: 0.2rem;
 		}
@@ -58,7 +62,7 @@ main {
 			height: 2.25rem;
 			padding-inline: 0.7rem;
 			border-radius: var(--r-sm);
-			font-weight: 700;
+			font-weight: 600;
 			font-size: var(--fs-sm);
 			color: var(--ink-2);
 			text-decoration: none;
@@ -68,13 +72,14 @@ main {
 				background: color-mix(in oklab, var(--color-base-200) 60%, transparent);
 			}
 			&[aria-current='page'] {
-				color: var(--teal);
-				background: var(--mint-wash);
+				color: var(--ink);
+				background: var(--blue-wash);
 			}
 		}
-		@media (max-width: 379px) {
+		@media (max-width: 419px) {
 			a {
 				padding-inline: 0.5rem;
+				font-size: var(--fs-xs);
 			}
 		}
 	}
@@ -108,7 +113,7 @@ main {
 			height: 0.5rem;
 			margin-top: 0.4em;
 			border-radius: 50%;
-			background: var(--pink);
+			background: var(--red);
 		}
 		strong {
 			color: var(--ink);
@@ -117,7 +122,7 @@ main {
 
 	a {
 		color: var(--ink);
-		font-weight: 700;
+		font-weight: 600;
 		text-decoration: none;
 		&:hover {
 			text-decoration: underline;

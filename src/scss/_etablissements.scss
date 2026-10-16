@@ -43,7 +43,7 @@
 			padding: 1.5rem;
 			background: var(--paper);
 			border-radius: var(--r-lg);
-			box-shadow: var(--shadow-sheet);
+			box-shadow: var(--shadow-card);
 			margin-bottom: 1.5rem;
 			max-width: 36rem;
 
@@ -51,9 +51,9 @@
 				white-space: nowrap;
 				font-family: var(--display);
 				font-size: clamp(2.5rem, 2rem + 2vw, 3.25rem);
-				font-weight: 650;
-				letter-spacing: -0.04em;
-				color: var(--teal);
+				font-weight: 700;
+				letter-spacing: -0.03em;
+				color: var(--admis-ink);
 				line-height: 1;
 			}
 			.legend {
@@ -75,7 +75,7 @@
 			align-items: center;
 			gap: 0.35rem;
 			margin-top: 1rem;
-			font-weight: 700;
+			font-weight: 600;
 			font-size: var(--fs-sm);
 			text-decoration: none;
 		}
@@ -85,13 +85,13 @@
 		display: block;
 		height: 0.375rem;
 		border-radius: 999px;
-		background: color-mix(in oklab, var(--color-base-200) 85%, var(--paper));
+		background: var(--zebra);
 		overflow: hidden;
 
 		> span {
 			display: block;
 			height: 100%;
-			background: var(--teal);
+			background: var(--blue);
 			border-radius: inherit;
 		}
 	}
@@ -126,9 +126,9 @@
 			}
 
 			&:hover {
-				background: var(--mint-wash);
+				background: var(--blue-wash);
 				.nom {
-					color: var(--teal);
+					color: var(--blue-dark);
 				}
 			}
 			&:focus-visible {
@@ -147,7 +147,7 @@
 			min-width: 0;
 		}
 		.nom {
-			font-weight: 700;
+			font-weight: 600;
 		}
 		.lieu {
 			font-size: var(--fs-xs);
@@ -160,9 +160,9 @@
 			grid-area: pct;
 			text-align: right;
 			font-family: var(--display);
-			font-weight: 650;
+			font-weight: 600;
 			font-size: var(--fs-lg);
-			letter-spacing: -0.02em;
+			letter-spacing: -0.01em;
 			line-height: 1.1;
 			white-space: nowrap;
 

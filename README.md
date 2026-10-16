@@ -3,7 +3,7 @@
 Site de consultation des résultats du Baccalauréat malgache. Statique, sans base de
 données : toutes les données vivent dans des fichiers JSON embarqués au build.
 SvelteKit (Svelte 5, runes) + SCSS, exécuté avec Bun, déployé sur Cloudflare (Workers / Pages).
-Polices auto-hébergées (Fontsource) : Bricolage Grotesque pour les titres et les chiffres, Lato pour le texte.
+Police auto-hébergée (Fontsource) : Poppins (400 à 700, sous-ensemble latin) partout.
 Aucune bibliothèque d'UI ni de graphiques supplémentaire.
 
 Site de démonstration indépendant (Ohayo Dev and Design), sans lien avec le ministère : les données sont fictives.
