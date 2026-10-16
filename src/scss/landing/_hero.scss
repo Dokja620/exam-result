@@ -32,3 +32,63 @@
 
 #search-individual {
 }
+
+// « Vérifier mon résultat » – boîte rapide dans le hero
+#title {
+	display: grid;
+	gap: shared.$spacing;
+	justify-items: center;
+}
+
+#search-individual {
+	display: grid;
+	gap: shared.$spacing-xs;
+	justify-items: center;
+	width: 100%;
+
+	> p {
+		font-weight: 700;
+	}
+
+	.error {
+		color: var(--color-error-content);
+		font-size: 0.9rem;
+	}
+}
+
+#search {
+	max-width: 100%;
+	flex-wrap: wrap;
+	gap: 4px;
+	padding: 4px;
+	background: var(--color-base-100);
+
+	select,
+	input {
+		border: none;
+		background: transparent;
+		min-width: 0;
+		width: auto;
+	}
+
+	select {
+		flex: 0 0 auto;
+	}
+
+	input {
+		flex: 1 1 16ch;
+		width: 16rem;
+		font-size: 1rem;
+	}
+
+	button {
+		flex: 0 0 auto;
+	}
+
+	input:focus-visible,
+	select:focus-visible,
+	button:focus-visible {
+		outline: 2px solid var(--color-primary-content);
+		outline-offset: 2px;
+	}
+}
