@@ -1,25 +1,23 @@
 @use './tokens' as *;
 
-// Le relevé : une feuille, un verdict en tête sur une teinte douce, puis le nom et la note.
+// Le relevé : la carte drapeau, un verdict en tête sur une teinte douce, puis le nom et la note.
 .releve {
 	--wash: var(--stone-wash);
 	--verdict: var(--ink);
 	--zone-on: var(--stone);
 
-	background: var(--paper);
+	@include flag-card;
 	color: var(--ink);
 	border-radius: var(--r-lg);
-	box-shadow: var(--shadow-sheet);
-	overflow: hidden;
 	width: 100%;
 	max-width: 34rem;
 	margin-inline: auto;
 	box-sizing: border-box;
 
 	&[data-statut='admis'] {
-		--wash: var(--mint-tint);
-		--verdict: var(--teal);
-		--zone-on: var(--teal);
+		--wash: var(--admis-wash);
+		--verdict: var(--admis-ink);
+		--zone-on: var(--admis);
 	}
 	&[data-statut='2e session'] {
 		--wash: var(--amber-wash);
@@ -30,6 +28,7 @@
 	// Verdict
 	.verdict {
 		background: var(--wash);
+		border-radius: var(--r-lg) var(--r-lg) 0 0;
 		padding: 1.25rem 1.5rem 1.75rem;
 
 		@include up($bp-sm) {
@@ -41,27 +40,28 @@
 			justify-content: space-between;
 			gap: 1rem;
 			font-size: var(--fs-xs);
-			font-weight: 700;
-			color: color-mix(in oklab, var(--verdict) 75%, var(--wash));
+			font-weight: 600;
+			color: color-mix(in srgb, var(--verdict) 80%, var(--wash));
 			margin-bottom: 1.75rem;
 		}
 
 		.statut {
 			font-family: var(--display);
-			font-size: clamp(3.25rem, 2.4rem + 4vw, 4.5rem);
+			font-size: clamp(3rem, 2.2rem + 4vw, 4.25rem);
 			font-weight: 700;
-			line-height: 0.9;
-			letter-spacing: -0.045em;
+			line-height: 1;
+			letter-spacing: -0.035em;
 			color: var(--verdict);
 		}
 		.sous {
 			margin-top: 0.6rem;
 			font-size: var(--fs-md);
-			font-weight: 700;
+			font-weight: 600;
 			color: var(--verdict);
 
-			&::first-letter {
-				text-transform: uppercase;
+			.hl {
+				color: var(--ink);
+				font-weight: 600;
 			}
 		}
 	}
@@ -81,8 +81,8 @@
 			font-family: var(--display);
 			font-size: var(--fs-lg);
 			font-weight: 700;
-			letter-spacing: -0.015em;
-			line-height: 1.15;
+			letter-spacing: -0.01em;
+			line-height: 1.2;
 			overflow-wrap: anywhere;
 		}
 		.prenoms {
@@ -103,8 +103,8 @@
 		.moyenne {
 			font-family: var(--display);
 			font-size: 2.5rem;
-			font-weight: 650;
-			letter-spacing: -0.035em;
+			font-weight: 700;
+			letter-spacing: -0.03em;
 			line-height: 1;
 		}
 		.sur {
@@ -126,7 +126,7 @@
 		margin-top: 0.9rem;
 
 		.zone {
-			background: color-mix(in oklab, var(--color-base-200) 85%, var(--paper));
+			background: var(--zebra);
 			&:first-child {
 				border-radius: 999px 0 0 999px;
 			}
@@ -153,7 +153,7 @@
 			background: var(--paper);
 			box-shadow:
 				inset 0 0 0 4px var(--ink),
-				0 1px 3px oklch(0% 0 0 / 0.2);
+				0 1px 3px hsl(0 0% 0% / 0.2);
 			transform: translate(-50%, -50%);
 		}
 	}
@@ -201,7 +201,7 @@
 		}
 		dd {
 			margin: 0;
-			font-weight: 700;
+			font-weight: 600;
 			font-size: var(--fs-sm);
 			overflow-wrap: anywhere;
 		}
@@ -249,8 +249,8 @@
 		min-height: 1.25rem;
 		padding: 0.5rem 1.5rem 1rem;
 		font-size: var(--fs-xs);
-		font-weight: 700;
-		color: var(--teal);
+		font-weight: 600;
+		color: var(--blue-dark);
 		text-align: center;
 
 		@include up($bp-sm) {
@@ -284,27 +284,27 @@
 // Modale (daisyUI .modal) : la feuille remplit la boîte
 .result-modal {
 	.modal-box {
-		padding: 0;
+		// Marge intérieure : laisse la place aux onglets du drapeau qui débordent de la carte
+		padding: 0.75rem;
 		background: transparent;
 		box-shadow: none;
-		max-width: 34rem;
-		width: calc(100% - 1.5rem);
-		overflow: visible;
-		max-height: calc(100dvh - 1.5rem);
+		max-width: calc(34rem + 1.5rem);
+		width: 100%;
+		max-height: 100dvh;
 		overflow-y: auto;
-		border-radius: var(--r-lg);
+		border-radius: 0;
 	}
 
 	.close {
 		position: absolute;
-		top: 0.75rem;
-		right: 0.75rem;
+		top: 1.5rem;
+		right: 1.5rem;
 		z-index: 2;
 		width: 2.5rem;
 		height: 2.5rem;
 		border-radius: 50%;
 		border: 0;
-		background: color-mix(in oklab, var(--paper) 70%, transparent);
+		background: color-mix(in srgb, var(--paper) 75%, transparent);
 		color: var(--ink);
 		display: grid;
 		place-items: center;
@@ -316,7 +316,7 @@
 	}
 
 	.modal-backdrop {
-		background: oklch(22% 0.03 220 / 0.5);
+		background: color-mix(in srgb, var(--rich-black) 55%, transparent);
 		backdrop-filter: blur(2px);
 	}
 
@@ -340,13 +340,13 @@
 		align-items: center;
 		gap: 0.35rem;
 		margin-bottom: 1.25rem;
-		font-weight: 700;
+		font-weight: 600;
 		font-size: var(--fs-sm);
 		color: var(--ink-2);
 		text-decoration: none;
 
 		&:hover {
-			color: var(--teal);
+			color: var(--blue-dark);
 		}
 	}
 
@@ -357,7 +357,7 @@
 		font-size: var(--fs-sm);
 
 		a {
-			font-weight: 700;
+			font-weight: 600;
 		}
 	}
 }
@@ -374,10 +374,10 @@
 		font-family: var(--display);
 		font-size: clamp(4.5rem, 3rem + 7vw, 7.5rem);
 		font-weight: 700;
-		letter-spacing: -0.05em;
-		line-height: 0.85;
-		color: var(--mint-tint);
-		-webkit-text-stroke: 1.5px var(--teal);
+		letter-spacing: -0.04em;
+		line-height: 1;
+		color: var(--blue);
+		text-shadow: 0 -4px 0 var(--white-smoke);
 	}
 	h1 {
 		margin-top: 1.5rem;

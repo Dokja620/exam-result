@@ -45,7 +45,11 @@
 		</p>
 		{#if admis}
 			<p class="statut" id="releve-statut">Admis</p>
-			<p class="sous">Mention {result.mention || 'passable'}</p>
+			<p class="sous">
+				Mention <span class="hl" data-mention={result.mention || 'passable'}
+					>{result.mention || 'passable'}</span
+				>
+			</p>
 		{:else if deuxieme}
 			<p class="statut" id="releve-statut">2e session</p>
 			<p class="sous">Convoqué aux épreuves de la seconde session</p>
