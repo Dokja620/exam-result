@@ -6,6 +6,24 @@
 	grid-template-columns: minmax(0, 1fr);
 	gap: 2.5rem;
 	padding-top: 1.75rem;
+	position: relative;
+	isolation: isolate;
+
+	// Confettis du drapeau (v1) derrière le titre, fondus vers le bas et les côtés
+	&::before {
+		content: '';
+		position: absolute;
+		z-index: -1;
+		inset: 0 0 auto;
+		height: 20rem;
+		background: url('../lib/assets/images/sprinkles.svg') center top / cover no-repeat;
+		mask-image: radial-gradient(ellipse 75% 85% at 50% 15%, #000 45%, transparent 100%);
+		pointer-events: none;
+
+		@include up($bp-lg) {
+			height: 26rem;
+		}
+	}
 
 	@include up($bp-md) {
 		padding-top: 3.5rem;
@@ -26,6 +44,8 @@
 	h1 {
 		max-width: 11ch;
 		color: var(--ink);
+		// Découpe v1 : un liseré du fond au-dessus des lettres, sur les confettis
+		text-shadow: 0 -4px 0 var(--white-smoke);
 	}
 
 	.lede {
@@ -41,7 +61,7 @@
 		color: var(--ink-2);
 
 		a {
-			font-weight: 700;
+			font-weight: 600;
 		}
 	}
 }
@@ -83,7 +103,7 @@
 			display: block;
 			padding: 0.45rem 0.9rem;
 			border-radius: calc(var(--r-md) - 0.25rem);
-			font-weight: 700;
+			font-weight: 600;
 			font-size: var(--fs-sm);
 			color: var(--ink-2);
 			font-variant-numeric: tabular-nums;
@@ -92,12 +112,11 @@
 			color: var(--ink);
 		}
 		input:checked + span {
-			background: var(--paper);
+			background: var(--blue);
 			color: var(--ink);
-			box-shadow: 0 1px 2px oklch(30% 0.03 200 / 0.12);
 		}
 		input:focus-visible + span {
-			outline: 2px solid var(--teal);
+			outline: 2px solid var(--blue-dark);
 			outline-offset: 1px;
 		}
 	}
@@ -162,9 +181,9 @@
 		height: 4.25rem;
 		border-radius: var(--r-md);
 		background: var(--paper);
-		box-shadow: inset 0 0 0 1px var(--line-strong);
+		box-shadow: inset 0 0 0 2px var(--field-line);
 		font-family: var(--display);
-		font-size: 2.125rem;
+		font-size: 2rem;
 		font-weight: 600;
 		font-variant-numeric: tabular-nums;
 		color: var(--ink);
@@ -176,25 +195,25 @@
 		}
 
 		&.filled {
-			box-shadow: inset 0 0 0 1px var(--ink-3);
+			box-shadow: inset 0 0 0 2px var(--field-line-focus);
 		}
 		&.current {
 			box-shadow:
-				inset 0 0 0 2px var(--teal),
+				inset 0 0 0 2px var(--blue-dark),
 				var(--focus-ring);
 
 			&:empty::after {
 				content: '';
 				width: 2px;
 				height: 1.75rem;
-				background: var(--teal);
+				background: var(--blue-dark);
 				animation: caret 1.1s steps(1) infinite;
 			}
 		}
 	}
 
 	&.invalid .cell.filled {
-		box-shadow: inset 0 0 0 1px var(--amber);
+		box-shadow: inset 0 0 0 2px var(--amber);
 		background: var(--amber-wash);
 	}
 }
