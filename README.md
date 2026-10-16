@@ -145,6 +145,17 @@ bun run deploy     # build + wrangler pages deploy
 La configuration est dans `wrangler.jsonc` (`nodejs_compat` activé pour `node:async_hooks`).
 Aucune variable d'environnement ni binding n'est nécessaire : les données sont dans le bundle.
 
+## Docker
+
+Image `oven/bun:1.4.2-alpine`, serveur SvelteKit autonome (`ADAPTER=node`), port 3000, utilisateur non root, healthcheck intégré.
+
+```bash
+docker build -t exam-result .
+docker run -p 3000:3000 exam-result
+```
+
+Sans `ADAPTER=node`, `bun run build` reste sur l'adaptateur Cloudflare.
+
 ## Structure
 
 ```
