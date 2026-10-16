@@ -1,16 +1,9 @@
 <script lang="ts">
-	import 'iconify-icon';
-	let { onExport }: { onExport: () => void } = $props();
+	import Icon from '$lib/components/Icon.svelte';
+	let { onExport, disabled = false }: { onExport: () => void; disabled?: boolean } = $props();
 </script>
 
-<div class="export">
-	<button
-		class="btn btn-secondary"
-		type="button"
-		onclick={onExport}
-		aria-label="Exporter la liste en PDF"
-	>
-		<iconify-icon icon="ph:file-pdf" style="font-size: 30px"></iconify-icon>
-		Exporter en PDF
-	</button>
-</div>
+<button class="btn btn-quiet" type="button" onclick={onExport} {disabled}>
+	<Icon name="printer" size={18} />
+	Imprimer la liste
+</button>

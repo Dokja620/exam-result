@@ -1,5 +1,5 @@
 <script lang="ts">
-	import 'iconify-icon';
+	import Icon from '$lib/components/Icon.svelte';
 
 	let {
 		page = $bindable(1),
@@ -12,34 +12,30 @@
 	const to = $derived(Math.min(page * pageSize, total));
 
 	function go(p: number) {
-		page = Math.min(Math.max(1, p), pageCount);
-		document.getElementById('table')?.scrollIntoView({ block: 'start', behavior: 'smooth' });
+		page = Math.min(Math.max(1, p || 1), pageCount);
+		document.getElementById('resultats')?.scrollIntoView({ block: 'start' });
 	}
 </script>
 
-<nav class="pagination" aria-label="Pagination" data-screenshift>
-	<p>
-		{from.toLocaleString('fr-FR')}–{to.toLocaleString('fr-FR')} sur {total.toLocaleString('fr-FR')}
+<nav class="pagination" aria-label="Pagination">
+	<p class="num">
+		{from.toLocaleString('fr-FR')} à {to.toLocaleString('fr-FR')} sur {total.toLocaleString(
+			'fr-FR'
+		)}
 	</p>
-	<div class="join">
-		<button
-			class="btn btn-sm join-item"
-			onclick={() => go(1)}
-			disabled={page === 1}
-			aria-label="Première page"
-		>
-			<iconify-icon icon="tabler:chevrons-left"></iconify-icon>
+	<div class="pages">
+		<button type="button" onclick={() => go(1)} disabled={page === 1} aria-label="Première page">
+			<Icon name="chevrons-left" size={18} />
 		</button>
 		<button
-			class="btn btn-sm join-item"
+			type="button"
 			onclick={() => go(page - 1)}
 			disabled={page === 1}
 			aria-label="Page précédente"
 		>
-			<iconify-icon icon="tabler:chevron-left"></iconify-icon>
+			<Icon name="chevron-left" size={18} />
 		</button>
-		<label class="btn btn-sm join-item page-input">
-			Page
+		<label>
 			<input
 				type="number"
 				min="1"
@@ -51,20 +47,20 @@
 			/ {pageCount}
 		</label>
 		<button
-			class="btn btn-sm join-item"
+			type="button"
 			onclick={() => go(page + 1)}
 			disabled={page === pageCount}
 			aria-label="Page suivante"
 		>
-			<iconify-icon icon="tabler:chevron-right"></iconify-icon>
+			<Icon name="chevron-right" size={18} />
 		</button>
 		<button
-			class="btn btn-sm join-item"
+			type="button"
 			onclick={() => go(pageCount)}
 			disabled={page === pageCount}
 			aria-label="Dernière page"
 		>
-			<iconify-icon icon="tabler:chevrons-right"></iconify-icon>
+			<Icon name="chevrons-right" size={18} />
 		</button>
 	</div>
 </nav>
