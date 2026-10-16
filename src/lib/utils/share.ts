@@ -58,20 +58,58 @@ function legacyCopy(text: string): boolean {
 	return ok;
 }
 
-/** Web Share si dispo, sinon copie du lien. Retourne 'shared' | 'copied' | 'failed'. */
+export type ShareOutcome = 'shared' | 'cancelled' | 'menu';
+
+/**
+ * Partage natif : avec l'image si l'appareil sait partager des fichiers, sinon titre + texte +
+ * lien. Retourne 'menu' quand aucune feuille de partage n'existe (le composant ouvre alors son
+ * menu de repli : WhatsApp, Facebook, image, lien).
+ */
 export async function shareResult(
 	r: Result,
-	annee: number
-): Promise<'shared' | 'copied' | 'failed'> {
-	const url = resultUrl(annee, r.numero);
-	const text = shareText(r, annee);
-	if (typeof navigator.share === 'function') {
-		try {
-			await navigator.share({ title: `Résultat BAC ${annee}`, text, url });
-			return 'shared';
-		} catch (e) {
-			if ((e as Error).name === 'AbortError') return 'failed';
+	annee: number,
+	image?: File | null
+): Promise<ShareOutcome> {
+	const data = {
+		title: `Résultat BAC ${annee}`,
+		text: shareText(r, annee),
+		url: resultUrl(annee, r.numero)
+	};
+	if (typeof navigator.share !== 'function') return 'menu';
+	const withFile = image && navigator.canShare?.({ files: [image] });
+	try {
+		await navigator.share(withFile ? { ...data, files: [image] } : data);
+		return 'shared';
+	} catch (e) {
+		const name = (e as Error).name;
+		if (name === 'AbortError') return 'cancelled';
+		// NotAllowedError (geste utilisateur expiré) ou fichier refusé : on retente sans image
+		if (withFile) {
+			try {
+				await navigator.share(data);
+				return 'shared';
+			} catch (e2) {
+				if ((e2 as Error).name === 'AbortError') return 'cancelled';
+			}
 		}
+		return 'menu';
 	}
-	return (await copyText(`${text}\n${url}`)) ? 'copied' : 'failed';
+}
+
+export function whatsappUrl(r: Result, annee: number): string {
+	return `https://wa.me/?text=${encodeURIComponent(`${shareText(r, annee)} ${resultUrl(annee, r.numero)}`)}`;
+}
+
+export function facebookUrl(r: Result, annee: number): string {
+	return `https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(resultUrl(annee, r.numero))}`;
+}
+
+export function downloadBlob(blob: Blob, name: string) {
+	const a = document.createElement('a');
+	a.href = URL.createObjectURL(blob);
+	a.download = name;
+	document.body.appendChild(a);
+	a.click();
+	a.remove();
+	setTimeout(() => URL.revokeObjectURL(a.href), 4000);
 }

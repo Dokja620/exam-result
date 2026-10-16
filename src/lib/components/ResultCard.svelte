@@ -1,6 +1,15 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
-	import { copyText, resultUrl, shareResult } from '$lib/utils/share';
+	import {
+		copyText,
+		downloadBlob,
+		facebookUrl,
+		resultUrl,
+		shareResult,
+		whatsappUrl
+	} from '$lib/utils/share';
+	import { shareImageBlob, shareImageName } from '$lib/utils/share-image';
+	import { tick } from 'svelte';
 	import type { Result } from '$lib/types';
 
 	let {
@@ -23,10 +32,74 @@
 		timer = setTimeout(() => (announce = feedback = ''), 4000);
 	}
 
+	// ---- Partager : image générée au survol / focus du bouton, pour garder le geste utilisateur
+	let image: Promise<Blob | null> | null = null;
+	let imageFor = '';
+	function prepareImage(): Promise<Blob | null> {
+		if (!image || imageFor !== result.id) {
+			imageFor = result.id;
+			image = shareImageBlob({ result, annee, site: window.location.host }).catch(() => null);
+		}
+		return image;
+	}
+
+	let menuOpen = $state(false);
+	let sharing = $state(false);
+	let shareBtn: HTMLButtonElement | undefined = $state();
+	let menu: HTMLDivElement | undefined = $state();
+
 	async function share() {
-		const r = await shareResult(result, annee);
-		if (r === 'copied') flash('Lien copié');
-		else if (r === 'failed') flash('Partage impossible sur cet appareil', true);
+		if (menuOpen) return closeMenu();
+		sharing = true;
+		const blob = await prepareImage();
+		const file = blob
+			? new File([blob], shareImageName(result, annee), { type: 'image/png' })
+			: null;
+		const r = await shareResult(result, annee, file);
+		sharing = false;
+		if (r === 'menu') openMenu();
+	}
+
+	async function openMenu() {
+		menuOpen = true;
+		await tick();
+		menu?.querySelector<HTMLElement>('a, button')?.focus();
+	}
+	function closeMenu(refocus = true) {
+		menuOpen = false;
+		if (refocus) shareBtn?.focus();
+	}
+	function onMenuKey(e: KeyboardEvent) {
+		if (e.key === 'Escape') {
+			e.preventDefault();
+			e.stopPropagation(); // ne ferme pas la modale qui contient la carte
+			closeMenu();
+			return;
+		}
+		if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
+		e.preventDefault();
+		const items = [...(menu?.querySelectorAll<HTMLElement>('a, button') ?? [])];
+		const i = items.indexOf(document.activeElement as HTMLElement);
+		const n = e.key === 'ArrowDown' ? i + 1 : i - 1;
+		items[(n + items.length) % items.length]?.focus();
+	}
+	function onOutside(e: PointerEvent) {
+		if (!menuOpen) return;
+		const t = e.target as Node;
+		if (menu?.contains(t) || shareBtn?.contains(t)) return;
+		closeMenu(false);
+	}
+	async function downloadImage() {
+		const blob = await prepareImage();
+		closeMenu();
+		if (blob) {
+			downloadBlob(blob, shareImageName(result, annee));
+			flash('Image téléchargée');
+		} else flash('L’image n’a pas pu être créée sur cet appareil', true);
+	}
+	async function copyFromMenu() {
+		closeMenu();
+		await copy();
 	}
 	// « Copier le lien » : le bouton se transforme ~2 s, l'annonce passe par la région live
 	let copied = $state(false);
@@ -50,6 +123,8 @@
 		result.moyenne.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 	);
 </script>
+
+<svelte:window onpointerdown={onOutside} />
 
 <article class="releve" class:enter data-statut={result.statut} aria-labelledby="releve-statut">
 	<header class="verdict">
@@ -132,10 +207,58 @@
 	</div>
 
 	<div class="actions">
-		<button class="button" type="button" onclick={share}>
-			<Icon name="share" size={18} />
-			Partager
-		</button>
+		<div class="share-wrap">
+			<button
+				bind:this={shareBtn}
+				class="button share"
+				type="button"
+				aria-haspopup="true"
+				aria-expanded={menuOpen}
+				aria-controls="share-menu-{result.id}"
+				aria-busy={sharing}
+				onclick={share}
+				onpointerenter={prepareImage}
+				onfocus={prepareImage}
+				ontouchstart={prepareImage}
+			>
+				<Icon name="share" size={18} />
+				Partager
+			</button>
+			{#if menuOpen}
+				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
+				<div
+					bind:this={menu}
+					id="share-menu-{result.id}"
+					class="share-menu"
+					role="group"
+					aria-label="Partager le résultat"
+					onkeydown={onMenuKey}
+				>
+					<a
+						href={whatsappUrl(result, annee)}
+						target="_blank"
+						rel="noopener noreferrer"
+						onclick={() => closeMenu(false)}
+					>
+						<Icon name="whatsapp" size={18} /> WhatsApp
+					</a>
+					<a
+						href={facebookUrl(result, annee)}
+						target="_blank"
+						rel="noopener noreferrer"
+						onclick={() => closeMenu(false)}
+					>
+						<Icon name="facebook" size={18} /> Facebook
+					</a>
+					<button type="button" onclick={downloadImage}>
+						<Icon name="photo" size={18} /> Télécharger l’image
+					</button>
+					<button type="button" onclick={copyFromMenu}>
+						<Icon name="link" size={18} /> Copier le lien
+					</button>
+				</div>
+			{/if}
+		</div>
 		<button class="button text copy" class:done={copied} type="button" onclick={copy}>
 			<Icon name={copied ? 'check' : 'link'} size={18} />
 			{copied ? 'Lien copié' : 'Copier le lien'}
