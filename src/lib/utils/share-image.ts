@@ -332,7 +332,7 @@ export async function drawShareImage(
 	ctx.fillText(site, x, H - 92);
 	ctx.fillStyle = C.ink3;
 	ctx.font = font(400, 26);
-	ctx.fillText('Données fictives · site de démonstration, sans lien avec le ministère', x, H - 50);
+	ctx.fillText('Données fictives', x, H - 50);
 }
 
 export async function shareImageBlob(opts: ShareImageOptions): Promise<Blob> {
