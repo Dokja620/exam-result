@@ -1,4 +1,9 @@
 // Impression : « Exporter en PDF » (liste) et « Imprimer » (relevé)
+@page {
+	size: A4 portrait;
+	margin: 14mm;
+}
+
 @media print {
 	.site-header,
 	.site-footer,
@@ -16,8 +21,10 @@
 		display: none !important;
 	}
 
-	body {
-		background: #fff;
+	html,
+	body,
+	#layout {
+		background: #fff !important;
 	}
 
 	.results-table {
@@ -71,12 +78,68 @@
 		}
 	}
 
+	// Relevé : une seule page A4, carte nette, onglets du drapeau conservés, QR + date
+	.result-page {
+		max-width: 150mm;
+		margin: 0 auto;
+		padding: 8mm 6mm 0;
+	}
+
 	.releve {
-		box-shadow: none;
-		border: 1pt solid #bbb;
 		max-width: 100%;
-		-webkit-print-color-adjust: exact;
-		print-color-adjust: exact;
+		font-size: 10.5pt;
+		break-inside: avoid;
+		animation: none !important;
+
+		&,
+		*,
+		&::before,
+		&::after {
+			-webkit-print-color-adjust: exact;
+			print-color-adjust: exact;
+		}
+		&::before {
+			box-shadow: none;
+			outline: 0.75pt solid #c8c8c8;
+		}
+		.marker {
+			animation: none !important;
+		}
+		.verdict {
+			padding: 7mm 9mm 8mm;
+		}
+		.corps {
+			padding: 7mm 9mm 2mm;
+			gap: 6mm;
+		}
+
+		.print-foot {
+			display: flex;
+			align-items: center;
+			gap: 5mm;
+			margin: 2mm 9mm 0;
+			padding: 5mm 0 7mm;
+			border-top: 0.75pt solid #ddd;
+			font-size: 8.5pt;
+			color: #333;
+			line-height: 1.5;
+
+			.qr {
+				width: 24mm;
+				height: 24mm;
+				flex: none;
+			}
+			b {
+				font-weight: 600;
+			}
+			p {
+				overflow-wrap: anywhere;
+			}
+			.fictif {
+				font-weight: 600;
+				color: #000;
+			}
+		}
 	}
 }
 

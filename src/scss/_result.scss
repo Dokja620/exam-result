@@ -308,6 +308,11 @@
 		}
 	}
 
+	// Pied visible seulement à l'impression (QR + date)
+	.print-foot {
+		display: none;
+	}
+
 	.feedback {
 		min-height: 1.25rem;
 		padding: 0.5rem 1.5rem 1rem;

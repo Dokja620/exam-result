@@ -10,6 +10,7 @@
 	} from '$lib/utils/share';
 	import { shareImageBlob, shareImageName } from '$lib/utils/share-image';
 	import { tick } from 'svelte';
+	import Qr from '$lib/components/Qr.svelte';
 	import type { Result } from '$lib/types';
 
 	let {
@@ -115,6 +116,18 @@
 		clearTimeout(copyTimer);
 		copyTimer = setTimeout(() => (copied = false), 2000);
 	}
+
+	// Pied d'impression : lien canonique (QR) et date, calculés côté client
+	let printUrl = $state('');
+	let printDate = $state('');
+	$effect(() => {
+		printUrl = resultUrl(annee, result.numero);
+		printDate = new Date().toLocaleDateString('fr-FR', {
+			day: 'numeric',
+			month: 'long',
+			year: 'numeric'
+		});
+	});
 
 	// Position de la moyenne sur l'échelle 0–20 (seuils : 8 pour la 2e session, 10 pour l'admission)
 	const pos = $derived(Math.min(100, Math.max(0, (result.moyenne / 20) * 100)));
@@ -267,6 +280,14 @@
 			<Icon name="printer" size={18} />
 			Imprimer
 		</button>
+	</div>
+	<div class="print-foot" aria-hidden="true">
+		<Qr value={printUrl} label="QR code du résultat en ligne" />
+		<div>
+			<p><b>Vérifier en ligne :</b> {printUrl}</p>
+			<p>Imprimé le {printDate}</p>
+			<p class="fictif">Données fictives, document non officiel</p>
+		</div>
 	</div>
 	<p class="sr-only" aria-live="polite">{announce}</p>
 	<p class="feedback">{feedback}</p>
