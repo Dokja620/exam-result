@@ -1,8 +1,3 @@
-<script>
-	import logoMada from '$lib/assets/images/madagascar.webp';
-	import logoMESUPRES from '$lib/assets/images/mesupres.webp';
-</script>
-
 <header>
 	<nav data-screenshift="">
 		<div class="logo">

@@ -1,7 +1,3 @@
-<script>
-	let currentYear = new Date().getFullYear();
-</script>
-
 <footer data-screenshift>
 	<div class="copyright">
 		<small>
