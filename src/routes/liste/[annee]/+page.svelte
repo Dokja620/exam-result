@@ -67,6 +67,7 @@
 		error={ds.error}
 		annee={data.annee}
 		initialSearch={data.q}
+		initialFilters={data.filters}
 		autofocus={data.focus}
 		onSelect={select}
 		onRetry={() => ds.load(data.annee)}

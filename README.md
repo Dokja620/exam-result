@@ -13,7 +13,10 @@ Fonctionnalités :
 - **Vérifier mon résultat** : l'accueil se concentre sur la saisie du numéro (six cases) et la
   session en chiffres ; le relevé s'ouvre en modale.
 - **Recherche instantanée** par numéro ou nom/prénoms (insensible à la casse et aux accents, debounce).
-- **Filtres** : série, province, observation (admis / 2e session / ajourné), mention.
+- **Filtres** : série, province, observation (admis / 2e session / ajourné), mention, réunis
+  derrière un bouton « Filtres » (popover ≥ 768 px, feuille en bas d'écran en dessous) ; les
+  filtres actifs s'affichent en pastilles amovibles et vivent dans l'URL
+  (`?serie=&province=&statut=&mention=`).
 - **Relevé candidat** : modale accessible (`Esc`, focus piégé) sur la page d'accueil, et page
   autonome `/resultat/<annee>/<numero>` rendue côté serveur avec balises Open Graph (nom + statut),
   c'est l'URL utilisée par _Partager_ (Web Share, repli copie) et _Copier le lien_.

@@ -1,6 +1,7 @@
 import { error } from '@sveltejs/kit';
 import type { PageLoad } from './$types';
 import type { Meta, Result } from '$lib/types';
+import { filtersFromParams } from '$lib/components/table/FilterBar.svelte';
 
 export const load: PageLoad = async ({ fetch, params, url }) => {
 	const metaRes = await fetch('/api/results');
@@ -22,6 +23,7 @@ export const load: PageLoad = async ({ fetch, params, url }) => {
 		annee,
 		candidat,
 		q: url.searchParams.get('q') ?? '',
+		filters: filtersFromParams(url.searchParams),
 		focus: url.searchParams.has('focus')
 	};
 };

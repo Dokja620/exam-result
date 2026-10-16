@@ -1,12 +1,17 @@
 <script lang="ts">
 	import { tick } from 'svelte';
 	import Icon from '$lib/components/Icon.svelte';
-	import FilterBar, { EMPTY_FILTERS, type Filters } from '$lib/components/table/FilterBar.svelte';
+	import FilterBar, {
+		EMPTY_FILTERS,
+		FILTER_KEYS,
+		type Filters
+	} from '$lib/components/table/FilterBar.svelte';
 	import PdfExport from '$lib/components/table/PDFexport.svelte';
 	import CsvExport from '$lib/components/table/CSVexport.svelte';
 	import Pagination from '$lib/components/table/Pagination.svelte';
 	import { normalize } from '$lib/utils/normalize';
 	import { MediaQuery } from '$lib/utils/media.svelte';
+	import { replaceState } from '$app/navigation';
 	import type { Result } from '$lib/types';
 
 	let {
@@ -15,6 +20,7 @@
 		error = '',
 		annee,
 		initialSearch = '',
+		initialFilters = EMPTY_FILTERS,
 		autofocus = false,
 		onSelect,
 		onRetry
@@ -24,6 +30,7 @@
 		error?: string;
 		annee: number;
 		initialSearch?: string;
+		initialFilters?: Filters;
 		autofocus?: boolean;
 		onSelect: (r: Result) => void;
 		onRetry: () => void;
@@ -38,7 +45,17 @@
 		searchTimeout = setTimeout(() => (query = normalize(search)), 150);
 	}
 
-	let filters = $state<Filters>({ ...EMPTY_FILTERS });
+	let filters = $state<Filters>({ ...initialFilters });
+
+	// Filtres reflétés dans l'URL (?serie=&province=&statut=&mention=), sans entrée d'historique
+	$effect(() => {
+		const url = new URL(window.location.href);
+		for (const k of FILTER_KEYS) {
+			if (filters[k]) url.searchParams.set(k, filters[k]);
+			else url.searchParams.delete(k);
+		}
+		if (url.href !== window.location.href) replaceState(url, {});
+	});
 
 	// Index de recherche précalculé une fois par jeu de données
 	const indexed = $derived(
@@ -102,7 +119,13 @@
 	aria-busy={loading}
 	aria-label="Liste des candidats {annee}"
 >
-	<FilterBar bind:search bind:filters onSearch={debounceSearch} {autofocus} />
+	<FilterBar
+		bind:search
+		bind:filters
+		count={filtered.length}
+		onSearch={debounceSearch}
+		{autofocus}
+	/>
 
 	<div class="list-bar">
 		<p class="count" aria-live="polite">
