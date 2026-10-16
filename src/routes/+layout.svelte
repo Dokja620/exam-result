@@ -7,6 +7,7 @@
 	import '@fontsource/lato/400.css';
 	import '@fontsource/lato/700.css';
 	import '@fontsource/lato/900.css';
+	import '@fontsource-variable/bricolage-grotesque/opsz.css';
 	let { children } = $props();
 </script>
 
