@@ -2,7 +2,7 @@
  * Accès aux données côté serveur. Les fichiers `src/lib/data/<annee>.json`
  * sont découpés en chunks séparés par Vite et chargés à la demande.
  */
-import type { Dataset, Meta, Result } from '$lib/types';
+import type { Dataset, Examples, Meta, Note, Result } from '$lib/types';
 import { normalize } from '$lib/utils/normalize';
 
 const loaders = import.meta.glob<{ default: Dataset }>('$lib/data/*.json');
@@ -35,11 +35,14 @@ export async function loadDataset(annee: number): Promise<Dataset | null> {
 
 export async function getMeta(): Promise<Meta> {
 	const totaux: Record<string, number> = {};
+	const examples: Record<string, Examples> = {};
 	for (const y of years) {
 		const ds = await loadDataset(y);
-		if (ds) totaux[String(y)] = ds.total;
+		if (!ds) continue;
+		totaux[String(y)] = ds.total;
+		if (ds.examples) examples[String(y)] = ds.examples;
 	}
-	return { annees: years, annee: defaultYear(), totaux };
+	return { annees: years, annee: defaultYear(), totaux, examples };
 }
 
 export async function findByNumero(annee: number, numero: string): Promise<Result | null> {
@@ -62,4 +65,12 @@ export async function search(annee: number, q: string, limit = 20): Promise<Resu
 		}
 	}
 	return out;
+}
+
+/** Notes du candidat associées à leurs matières et coefficients (relevé de notes). */
+export async function notesOf(annee: number, r: Result): Promise<Note[]> {
+	const ds = await loadDataset(annee);
+	const mats = ds?.matieres?.[r.serie] ?? [];
+	if (!r.notes || r.notes.length !== mats.length) return [];
+	return mats.map(([matiere, coef], i) => ({ matiere, coef, note: r.notes[i] }));
 }

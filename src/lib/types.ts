@@ -33,7 +33,22 @@ export interface Result {
 	mention: Mention;
 	/** Moyenne générale /20 */
 	moyenne: number;
+	/** Notes /20 dans l'ordre de `Dataset.matieres[serie]` (moyenne pondérée = `moyenne`) */
+	notes: number[];
 }
+
+/** `[matière, coefficient]` */
+export type Matiere = [string, number];
+
+/** Ligne du relevé de notes, une fois la note associée à sa matière. */
+export interface Note {
+	matiere: string;
+	coef: number;
+	note: number;
+}
+
+/** Un numéro de candidat par issue (numéros de test de l'accueil). */
+export type Examples = Record<'ajourné' | '2e session' | Exclude<Mention, ''>, string>;
 
 export type Results = Result[];
 
@@ -44,6 +59,10 @@ export interface Dataset {
 	/** ISO 8601 */
 	generatedAt: string;
 	total: number;
+	/** Matières et coefficients par série */
+	matieres: Record<Serie, Matiere[]>;
+	/** Premier numéro de chaque issue */
+	examples: Examples;
 	results: Result[];
 }
 
@@ -52,4 +71,6 @@ export interface Meta {
 	annees: number[];
 	annee: number;
 	totaux: Record<string, number>;
+	/** Numéros de test par année */
+	examples: Record<string, Examples>;
 }

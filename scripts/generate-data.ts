@@ -10,7 +10,7 @@
 import { writeFileSync, mkdirSync } from 'node:fs';
 import { join, dirname } from 'node:path';
 import { fileURLToPath } from 'node:url';
-import type { Dataset, Result, Serie, Statut, Mention } from '../src/lib/types';
+import type { Dataset, Examples, Matiere, Result, Serie, Statut, Mention } from '../src/lib/types';
 
 const OUT_DIR = join(dirname(fileURLToPath(import.meta.url)), '../src/lib/data');
 
@@ -235,6 +235,96 @@ const PROVINCES: Record<string, { w: number; cisco: Record<string, string[]> }> 
 	}
 };
 
+// Matières et coefficients par série (inspirés du BAC malgache). EPS (coef. 1) est présente
+// partout : c'est elle qui absorbe le dernier ajustement au quart de point.
+const MATIERES: Record<Serie, Matiere[]> = {
+	A1: [
+		['Philosophie', 4],
+		['Français', 3],
+		['Malagasy', 3],
+		['Anglais', 2],
+		['Histoire-Géographie', 3],
+		['Mathématiques', 3],
+		['SVT', 2],
+		['EPS', 1]
+	],
+	A2: [
+		['Philosophie', 4],
+		['Français', 4],
+		['Malagasy', 4],
+		['Anglais', 3],
+		['Histoire-Géographie', 3],
+		['Mathématiques', 1],
+		['SVT', 2],
+		['EPS', 1]
+	],
+	L: [
+		['Philosophie', 4],
+		['Français', 4],
+		['Malagasy', 3],
+		['Anglais', 3],
+		['Langue vivante 2', 2],
+		['Histoire-Géographie', 3],
+		['Mathématiques', 1],
+		['EPS', 1]
+	],
+	C: [
+		['Mathématiques', 5],
+		['Physique-Chimie', 5],
+		['SVT', 2],
+		['Français', 2],
+		['Malagasy', 2],
+		['Anglais', 2],
+		['Philosophie', 2],
+		['Histoire-Géographie', 2],
+		['EPS', 1]
+	],
+	D: [
+		['Mathématiques', 4],
+		['SVT', 4],
+		['Physique-Chimie', 4],
+		['Français', 2],
+		['Malagasy', 2],
+		['Anglais', 2],
+		['Philosophie', 2],
+		['Histoire-Géographie', 2],
+		['EPS', 1]
+	],
+	S: [
+		['Mathématiques', 4],
+		['Physique-Chimie', 4],
+		['Technologie', 3],
+		['SVT', 2],
+		['Français', 2],
+		['Malagasy', 2],
+		['Anglais', 2],
+		['Philosophie', 2],
+		['EPS', 1]
+	],
+	OSE: [
+		['Économie', 5],
+		['Gestion', 4],
+		['Mathématiques', 3],
+		['Histoire-Géographie', 2],
+		['Français', 2],
+		['Malagasy', 2],
+		['Anglais', 2],
+		['Philosophie', 2],
+		['EPS', 1]
+	],
+	G: [
+		['Comptabilité', 5],
+		['Gestion', 4],
+		['Économie', 3],
+		['Droit', 2],
+		['Mathématiques', 2],
+		['Français', 2],
+		['Malagasy', 2],
+		['Anglais', 2],
+		['EPS', 1]
+	]
+};
+
 // ---------- Helpers ----------
 function pick<T>(rnd: () => number, arr: readonly T[]): T {
 	return arr[Math.floor(rnd() * arr.length)];
@@ -255,6 +345,59 @@ function mentionFor(moyenne: number): Mention {
 	if (moyenne >= 14) return 'bien';
 	if (moyenne >= 12) return 'assez bien';
 	return 'passable';
+}
+
+const quarter = (n: number) => Math.round(n * 4) / 4;
+const clamp20 = (n: number) => Math.min(20, Math.max(0, n));
+
+/**
+ * Notes par matière (au quart de point) dont la moyenne pondérée retombe sur `moyenne`
+ * (écart ≤ 0,125 / Σcoef, soit < 0,01). PRNG propre au candidat : les autres champs du jeu
+ * de données restent identiques à ceux générés sans notes.
+ */
+function notesFor(annee: number, numero: string, serie: Serie, moyenne: number): number[] {
+	const rnd = mulberry32(annee * 1_000_003 + Number(numero));
+	const mats = MATIERES[serie];
+	const total = mats.reduce((a, [, c]) => a + c, 0);
+	const target = moyenne * total;
+	// Profil : un point fort et un point faible par candidat, plus du bruit
+	const fort = Math.floor(rnd() * mats.length);
+	const faible = (fort + 1 + Math.floor(rnd() * (mats.length - 1))) % mats.length;
+	const notes = mats.map((_, i) => {
+		const bias = i === fort ? 2.5 : i === faible ? -2.5 : 0;
+		const noise = (rnd() + rnd() + rnd() - 1.5) * 3.2;
+		return quarter(clamp20(moyenne + bias + noise));
+	});
+	const eps = mats.findIndex(([m]) => m === 'EPS');
+	// EPS part de la moyenne : loin des bornes, elle pourra absorber le reste
+	notes[eps] = quarter(clamp20(moyenne + (rnd() - 0.5) * 2));
+	const points = () => notes.reduce((a, n, i) => a + n * mats[i][1], 0);
+	// On répartit l'écart sur les autres matières, puis EPS (coef. 1) finit au quart de point
+	for (let pass = 0; pass < 60; pass++) {
+		const r = target - points();
+		if (Math.abs(r) <= 1) break;
+		const i = pass % mats.length;
+		if (i === eps) continue;
+		const c = mats[i][1];
+		notes[i] = quarter(clamp20(notes[i] + (Math.abs(r) > 2 * c ? r / c / 2 : r / c)));
+	}
+	notes[eps] = quarter(clamp20(notes[eps] + (target - points())));
+	const err = Math.abs(points() / total - moyenne);
+	if (err > 0.01) throw new Error(`notes incohérentes ${annee}-${numero} (${err})`);
+	return notes;
+}
+
+/** Premier candidat (par numéro) de chaque issue : numéros de test affichés sur l'accueil. */
+function examplesFor(results: Result[]): Examples {
+	const find = (ok: (r: Result) => boolean) => results.find(ok)?.numero ?? '';
+	return {
+		ajourné: find((r) => r.statut === 'ajourné'),
+		'2e session': find((r) => r.statut === '2e session'),
+		passable: find((r) => r.mention === 'passable'),
+		'assez bien': find((r) => r.mention === 'assez bien'),
+		bien: find((r) => r.mention === 'bien'),
+		'très bien': find((r) => r.mention === 'très bien')
+	};
 }
 
 // ---------- Génération ----------
@@ -322,7 +465,8 @@ export function generate(annee: number, count: number): Dataset {
 			ecole,
 			statut,
 			mention,
-			moyenne
+			moyenne,
+			notes: notesFor(annee, numero, serie, moyenne)
 		});
 	}
 
@@ -334,6 +478,8 @@ export function generate(annee: number, count: number): Dataset {
 		session: `Session ${annee}`,
 		generatedAt: `${annee}-07-25T08:00:00.000Z`,
 		total: results.length,
+		matieres: MATIERES,
+		examples: examplesFor(results),
 		results
 	};
 }
@@ -351,7 +497,7 @@ mkdirSync(OUT_DIR, { recursive: true });
 for (const [annee, count] of plan) {
 	const ds = generate(annee, count);
 	const file = join(OUT_DIR, `${annee}.json`);
-	writeFileSync(file, JSON.stringify(ds));
+	writeFileSync(file, JSON.stringify(ds, null, '\t') + '\n');
 	const admis = ds.results.filter((r) => r.statut === 'admis').length;
 	console.log(`${file}: ${ds.total} candidats, ${((admis / ds.total) * 100).toFixed(1)} % admis`);
 }

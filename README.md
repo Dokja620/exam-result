@@ -66,6 +66,20 @@ apparaître l'année dans le sélecteur. Vite les découpe en chunks séparés, 
 	"session": "Session 2025",
 	"generatedAt": "2025-07-25T08:00:00.000Z", // ISO 8601
 	"total": 3200,
+	// Matières et coefficients par série : [matière, coef]
+	"matieres": {
+		"D": [["Mathématiques", 4], ["SVT", 4], ["Physique-Chimie", 4], "…", ["EPS", 1]],
+		"…": []
+	},
+	// Premier numéro de chaque issue (numéros de test affichés sur l'accueil)
+	"examples": {
+		"ajourné": "100523",
+		"2e session": "102051",
+		"passable": "102794",
+		"assez bien": "101507",
+		"bien": "100449",
+		"très bien": "101170"
+	},
 	"results": [
 		{
 			"id": "2025-100449", // `${annee}-${numero}`, unique
@@ -78,7 +92,10 @@ apparaître l'année dans le sélecteur. Vite les découpe en chunks séparés, 
 			"ecole": "Lycée Taolagnaro",
 			"statut": "admis", // admis | 2e session | ajourné
 			"mention": "bien", // très bien | bien | assez bien | passable | "" (non admis)
-			"moyenne": 14.47 // /20
+			"moyenne": 14.47, // /20
+			// Notes /20 au quart de point, dans l'ordre de matieres[serie] ;
+			// moyenne pondérée = moyenne (± 0,01)
+			"notes": [13.75, 14, 15.25, 15.25, 12.5, 12.25, 15.75, 16.75, 15.75]
 		}
 	]
 }
@@ -95,14 +112,15 @@ bun run scripts/generate-data.ts 2026 4000   # une année, N candidats
 ```
 
 Le générateur (`scripts/generate-data.ts`) est déterministe (PRNG seedé par l'année) :
-même commande ⇒ même fichier. Pour des données réelles, produire un JSON respectant le schéma
+même commande ⇒ même fichier. Les notes par matière utilisent un PRNG propre à chaque candidat
+(seedé par l'année et le numéro) : les autres champs ne bougent pas quand on les régénère. Pour des données réelles, produire un JSON respectant le schéma
 ci-dessus et le déposer dans `src/lib/data/`.
 
 ### API
 
 | Requête                                   | Réponse                                |
 | ----------------------------------------- | -------------------------------------- |
-| `GET /api/results`                        | `{ annees, annee, totaux }`            |
+| `GET /api/results`                        | `{ annees, annee, totaux, examples }`  |
 | `GET /api/results?annee=2025`             | le jeu de données complet (cache 24 h) |
 | `GET /api/results?annee=2025&n=123456`    | un candidat, `404` sinon               |
 | `GET /api/results?annee=2025&search=rako` | 20 premiers résultats correspondants   |
