@@ -57,20 +57,22 @@
 		if (url.href !== window.location.href) replaceState(url, {});
 	});
 
-	// Index de recherche précalculé une fois par jeu de données
-	const indexed = $derived(
-		rows.map((r) => ({ r, q: normalize(`${r.nom} ${r.prenoms}`), n: r.numero }))
-	);
+	// Index de recherche (noms normalisés) : calculé à la première recherche seulement, un
+	// $derived n'étant évalué que lorsqu'il est lu. Le filtrage sans texte n'en a pas besoin.
+	const index = $derived(rows.map((r) => normalize(`${r.nom} ${r.prenoms}`)));
 
 	const filtered = $derived.by(() => {
 		const { serie, province, statut, mention } = filters;
+		if (!query && !serie && !province && !statut && !mention) return rows;
+		const names = query ? index : null;
 		const out: Result[] = [];
-		for (const { r, q, n } of indexed) {
+		for (let i = 0; i < rows.length; i++) {
+			const r = rows[i];
 			if (serie && r.serie !== serie) continue;
 			if (province && r.province !== province) continue;
 			if (statut && r.statut !== statut) continue;
 			if (mention && r.mention !== mention) continue;
-			if (query && !n.includes(query) && !q.includes(query)) continue;
+			if (names && !r.numero.includes(query) && !names[i].includes(query)) continue;
 			out.push(r);
 		}
 		return out;
@@ -151,7 +153,7 @@
 			<button class="button" type="button" onclick={onRetry}>Réessayer</button>
 		</div>
 	{:else if loading}
-		<div aria-hidden="true">
+		<div class="skeleton-list" aria-hidden="true">
 			{#each SKELETON as i (i)}<div class="skeleton-row"></div>{/each}
 		</div>
 	{:else if filtered.length === 0}

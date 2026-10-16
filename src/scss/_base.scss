@@ -243,6 +243,12 @@ a {
 }
 
 // Squelette de chargement
+// Pendant le chargement de la liste, la page garde au moins la hauteur de l'écran : le pied
+// de page n'est pas visible puis repoussé par les 50 lignes (pas de décalage de mise en page).
+.skeleton-list {
+	min-height: 100vh;
+}
+
 .skeleton-row {
 	height: 3.5rem;
 	border-bottom: 1px solid var(--line);
