@@ -7,11 +7,12 @@
 </script>
 
 <button
-	class="btn btn-quiet"
+	class="button ghost"
+	aria-label="Exporter la liste filtrée en CSV"
 	type="button"
 	disabled={rows.length === 0}
 	onclick={() => downloadCsv(rows, `resultats-bac-${annee}.csv`)}
 >
 	<Icon name="download" size={18} />
-	Exporter en CSV
+	CSV
 </button>

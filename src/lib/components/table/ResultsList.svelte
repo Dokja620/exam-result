@@ -14,6 +14,8 @@
 		loading = false,
 		error = '',
 		annee,
+		initialSearch = '',
+		autofocus = false,
 		onSelect,
 		onRetry
 	}: {
@@ -21,13 +23,15 @@
 		loading?: boolean;
 		error?: string;
 		annee: number;
+		initialSearch?: string;
+		autofocus?: boolean;
 		onSelect: (r: Result) => void;
 		onRetry: () => void;
 	} = $props();
 
 	// ---- Recherche (debounce) + filtres ----
-	let search = $state('');
-	let query = $state('');
+	let search = $state(initialSearch);
+	let query = $state(normalize(initialSearch));
 	let searchTimeout: ReturnType<typeof setTimeout>;
 	function debounceSearch() {
 		clearTimeout(searchTimeout);
@@ -85,30 +89,35 @@
 			onSelect(r);
 		}
 	}
+	const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 	const SKELETON = [0, 1, 2, 3, 4, 5];
 	const fmt = (n: number) => n.toLocaleString('fr-FR');
 	const moy = (n: number) =>
 		n.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 </script>
 
-<section id="resultats" class="results wrap" aria-busy={loading} aria-labelledby="resultats-title">
-	<div class="section-head">
-		<h2 id="resultats-title">Tous les candidats {annee}</h2>
+<section
+	id="resultats"
+	class="results"
+	aria-busy={loading}
+	aria-label="Liste des candidats {annee}"
+>
+	<FilterBar bind:search bind:filters onSearch={debounceSearch} {autofocus} />
+
+	<div class="list-bar">
 		<p class="count" aria-live="polite">
 			{#if loading}
 				Chargement…
 			{:else if rows.length}
-				{fmt(filtered.length)} candidat{filtered.length > 1 ? 's' : ''}
+				<b class="num">{fmt(filtered.length)}</b>
+				candidat{filtered.length > 1 ? 's' : ''}
 				{#if filtered.length !== rows.length}sur {fmt(rows.length)}{/if}
 			{/if}
 		</p>
-	</div>
-
-	<FilterBar bind:search bind:filters onSearch={debounceSearch} />
-
-	<div class="list-actions">
-		<CsvExport rows={filtered} {annee} />
-		<PdfExport onExport={exportPdf} disabled={filtered.length === 0} />
+		<div class="list-actions">
+			<CsvExport rows={filtered} {annee} />
+			<PdfExport onExport={exportPdf} disabled={filtered.length === 0} />
+		</div>
 	</div>
 
 	{#if error}
@@ -116,10 +125,10 @@
 			<Icon name="wifi-off" size={28} />
 			<strong>Les résultats {annee} n'ont pas pu être chargés.</strong>
 			<span>{error}</span>
-			<button class="btn btn-ink" type="button" onclick={onRetry}>Réessayer</button>
+			<button class="button" type="button" onclick={onRetry}>Réessayer</button>
 		</div>
 	{:else if loading}
-		<div class="result-cards" aria-hidden="true">
+		<div aria-hidden="true">
 			{#each SKELETON as i (i)}<div class="skeleton-row"></div>{/each}
 		</div>
 	{:else if filtered.length === 0}
@@ -129,20 +138,18 @@
 			<span>Vérifiez l'orthographe du nom ou retirez un filtre.</span>
 		</div>
 	{:else if asTable}
-		<p class="print-title">Résultats du Baccalauréat {annee}, Madagascar</p>
+		<p class="print-title">Résultats du Baccalauréat {annee}, Madagascar (données fictives)</p>
 		<div class="table-scroll">
 			<table class="results-table">
 				<thead>
 					<tr>
 						<th scope="col">Numéro</th>
-						<th scope="col">Nom et prénoms</th>
+						<th scope="col">Candidat</th>
 						<th scope="col">Série</th>
-						<th scope="col" class="lg">Établissement</th>
-						<th scope="col" class="lg">Province</th>
+						<th scope="col" class="lg">Lycée</th>
 						<th scope="col">Résultat</th>
 						<th scope="col">Mention</th>
 						<th scope="col" class="moy">Moyenne</th>
-						<th scope="col"><span class="sr-only">Ouvrir</span></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -157,28 +164,23 @@
 							<td class="name"><b>{item.nom}</b> {item.prenoms}</td>
 							<td>{item.serie}</td>
 							<td class="muted lg">{item.ecole}</td>
-							<td class="muted lg">{item.province}</td>
-							<td><span class="chip" data-statut={item.statut}>{item.statut}</span></td>
+							<td><span class="statut-tag" data-statut={item.statut}>{cap(item.statut)}</span></td>
 							<td class="mention">{item.mention || '—'}</td>
 							<td class="moy">{moy(item.moyenne)}</td>
-							<td class="go"><Icon name="chevron-right" size={18} /></td>
 						</tr>
 					{/each}
 				</tbody>
 			</table>
 		</div>
 	{:else}
-		<ul class="result-cards">
+		<ul class="result-rows">
 			{#each shown as item (item.id)}
 				<li>
 					<button type="button" onclick={() => onSelect(item)}>
 						<span class="name"><b>{item.nom}</b> {item.prenoms}</span>
-						<span class="chip" data-statut={item.statut}>{item.statut}</span>
-						<span class="meta">
-							<span>N° {item.numero}</span><span>Série {item.serie}</span><span
-								>{moy(item.moyenne)}</span
-							>
-						</span>
+						<span class="moy num">{moy(item.moyenne)}</span>
+						<span class="meta num">N° {item.numero}, série {item.serie}</span>
+						<span class="statut-tag" data-statut={item.statut}>{cap(item.statut)}</span>
 					</button>
 				</li>
 			{/each}

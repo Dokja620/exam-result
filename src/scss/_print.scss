@@ -2,10 +2,9 @@
 @media print {
 	.site-header,
 	.site-footer,
-	.masthead,
-	.overview,
+	.page-head .year,
 	.filterbar,
-	.list-actions,
+	.list-bar,
 	.pagination,
 	.result-page .back,
 	.result-page .autre,
@@ -13,7 +12,7 @@
 	.releve .feedback,
 	.result-modal .close,
 	.modal-backdrop,
-	.result-cards {
+	.result-rows {
 		display: none !important;
 	}
 
@@ -40,10 +39,8 @@
 		tr {
 			break-inside: avoid;
 		}
-		td.go {
-			display: none;
-		}
-		.lg {
+		.lg,
+		.md {
 			display: table-cell;
 		}
 	}
@@ -76,7 +73,7 @@
 
 	.releve {
 		box-shadow: none;
-		border: 1pt solid #999;
+		border: 1pt solid #bbb;
 		max-width: 100%;
 		-webkit-print-color-adjust: exact;
 		print-color-adjust: exact;
