@@ -1,6 +1,6 @@
 @use './tokens' as *;
 
-.stats {
+.overview {
 	margin-top: -1.75rem; // chevauche la bande mint
 	position: relative;
 
@@ -55,7 +55,7 @@
 			letter-spacing: -0.02em;
 			font-variant-numeric: tabular-nums;
 		}
-		.label {
+		.legend {
 			font-size: 0.875rem;
 			color: var(--ink-2);
 		}

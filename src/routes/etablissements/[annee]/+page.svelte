@@ -64,7 +64,7 @@
 			</div>
 			<div class="taux">
 				<span class="value">{fmtPct(data.fiche.taux)}</span>
-				<span class="label">
+				<span class="legend">
 					{fmtInt(data.fiche.admis)} admis sur {fmtInt(data.fiche.total)} candidats présentés
 				</span>
 			</div>

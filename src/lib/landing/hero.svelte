@@ -25,7 +25,7 @@
 	}
 </script>
 
-<section class="hero" aria-labelledby="hero-title">
+<section class="masthead" aria-labelledby="hero-title">
 	<div class="wrap">
 		<div>
 			<p class="kicker">Baccalauréat {annee}</p>

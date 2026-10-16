@@ -8,28 +8,28 @@
 	const stats = $derived(computeStats(rows));
 </script>
 
-<section class="stats wrap" aria-labelledby="stats-title">
+<section class="overview wrap" aria-labelledby="stats-title">
 	<h2 id="stats-title" class="sr-only">Statistiques du BAC {annee}</h2>
 	<div class="strip">
 		<div class="figures">
 			<div class="taux">
 				<span class="value">{fmtPct(stats.global.taux)}</span>
-				<span class="label">Taux de réussite</span>
+				<span class="legend">Taux de réussite</span>
 				<span class="gauge" aria-hidden="true"
 					><span style="width: {stats.global.taux}%"></span></span
 				>
 			</div>
 			<div>
 				<span class="value">{fmtInt(stats.global.admis)}</span>
-				<span class="label">Admis sur {fmtInt(stats.global.total)}</span>
+				<span class="legend">Admis sur {fmtInt(stats.global.total)}</span>
 			</div>
 			<div>
 				<span class="value">{fmtInt(stats.deuxieme)}</span>
-				<span class="label">Convoqués en 2e session</span>
+				<span class="legend">Convoqués en 2e session</span>
 			</div>
 			<div>
 				<span class="value">{fmtInt(stats.ajournes)}</span>
-				<span class="label">Ajournés</span>
+				<span class="legend">Ajournés</span>
 			</div>
 		</div>
 
