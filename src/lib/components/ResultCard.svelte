@@ -12,21 +12,35 @@
 	const admis = $derived(result.statut === 'admis');
 	const deuxieme = $derived(result.statut === '2e session');
 
+	// Annonces : toujours lues par la région live, affichées seulement pour les erreurs
+	let announce = $state('');
 	let feedback = $state('');
 	let timer: ReturnType<typeof setTimeout>;
-	function flash(msg: string) {
-		feedback = msg;
+	function flash(msg: string, visible = false) {
+		announce = msg;
+		feedback = visible ? msg : '';
 		clearTimeout(timer);
-		timer = setTimeout(() => (feedback = ''), 2500);
+		timer = setTimeout(() => (announce = feedback = ''), 4000);
 	}
 
 	async function share() {
 		const r = await shareResult(result, annee);
 		if (r === 'copied') flash('Lien copié');
-		else if (r === 'failed') flash('Partage impossible sur cet appareil');
+		else if (r === 'failed') flash('Partage impossible sur cet appareil', true);
 	}
+	// « Copier le lien » : le bouton se transforme ~2 s, l'annonce passe par la région live
+	let copied = $state(false);
+	let copyTimer: ReturnType<typeof setTimeout>;
 	async function copy() {
-		flash((await copyText(resultUrl(annee, result.numero))) ? 'Lien copié' : 'Copie impossible');
+		const ok = await copyText(resultUrl(annee, result.numero));
+		if (!ok) {
+			flash('Copie impossible : sélectionnez l’adresse dans la barre du navigateur', true);
+			return;
+		}
+		copied = true;
+		flash('Lien du résultat copié dans le presse-papiers');
+		clearTimeout(copyTimer);
+		copyTimer = setTimeout(() => (copied = false), 2000);
 	}
 
 	// Position de la moyenne sur l'échelle 0–20 (seuils : 8 pour la 2e session, 10 pour l'admission)
@@ -122,14 +136,15 @@
 			<Icon name="share" size={18} />
 			Partager
 		</button>
-		<button class="button text" type="button" onclick={copy}>
-			<Icon name="link" size={18} />
-			Copier le lien
+		<button class="button text copy" class:done={copied} type="button" onclick={copy}>
+			<Icon name={copied ? 'check' : 'link'} size={18} />
+			{copied ? 'Lien copié' : 'Copier le lien'}
 		</button>
 		<button class="button text" type="button" onclick={() => window.print()}>
 			<Icon name="printer" size={18} />
 			Imprimer
 		</button>
 	</div>
-	<p class="feedback" aria-live="polite">{feedback}</p>
+	<p class="sr-only" aria-live="polite">{announce}</p>
+	<p class="feedback">{feedback}</p>
 </article>

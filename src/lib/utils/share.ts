@@ -19,23 +19,43 @@ export function shareText(r: Result, annee: number): string {
 	return `${r.nom} ${r.prenoms}, BAC ${annee} série ${r.serie} : ${statutLabel(r)}.`;
 }
 
+/**
+ * Copie dans le presse-papiers. L'API Clipboard n'existe qu'en contexte sécurisé (https,
+ * localhost) : en http sur le réseau local, on retombe sur un textarea + execCommand('copy').
+ */
 export async function copyText(text: string): Promise<boolean> {
-	try {
-		await navigator.clipboard.writeText(text);
-		return true;
-	} catch {
-		// Fallback (anciens navigateurs / contexte non sécurisé)
-		const ta = document.createElement('textarea');
-		ta.value = text;
-		ta.setAttribute('readonly', '');
-		ta.style.position = 'fixed';
-		ta.style.opacity = '0';
-		document.body.appendChild(ta);
-		ta.select();
-		const ok = document.execCommand('copy');
-		ta.remove();
-		return ok;
+	if (window.isSecureContext && navigator.clipboard?.writeText) {
+		try {
+			await navigator.clipboard.writeText(text);
+			return true;
+		} catch {
+			// Permission refusée : on tente le repli
+		}
 	}
+	return legacyCopy(text);
+}
+
+function legacyCopy(text: string): boolean {
+	const active = document.activeElement as HTMLElement | null;
+	// Dans une modale (<dialog> modal), le reste de la page est inerte : le textarea doit y vivre
+	const host = active?.closest('dialog[open]') ?? document.body;
+	const ta = document.createElement('textarea');
+	ta.value = text;
+	ta.setAttribute('readonly', '');
+	ta.setAttribute('aria-hidden', 'true');
+	ta.style.cssText = 'position:fixed;top:0;left:0;width:1px;height:1px;opacity:0;font-size:16px';
+	host.appendChild(ta);
+	ta.select();
+	ta.setSelectionRange(0, text.length);
+	let ok = false;
+	try {
+		ok = document.execCommand('copy');
+	} catch {
+		ok = false;
+	}
+	ta.remove();
+	active?.focus({ preventScroll: true });
+	return ok;
 }
 
 /** Web Share si dispo, sinon copie du lien. Retourne 'shared' | 'copied' | 'failed'. */
