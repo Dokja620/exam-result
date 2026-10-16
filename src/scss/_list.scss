@@ -253,10 +253,10 @@
 		cursor: pointer;
 
 		&:nth-child(even) td {
-			background: var(--zebra);
+			background: var(--row-stripe);
 		}
 		&:hover td {
-			background: var(--blue-wash);
+			background: var(--row-hover);
 		}
 		&:focus-visible {
 			outline: 2px solid var(--blue-dark);

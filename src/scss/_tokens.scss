@@ -83,11 +83,14 @@ $bp-lg: 1024px;
 	--ink-2: color-mix(in srgb, var(--rich-black) 72%, var(--white-smoke));
 	--ink-3: color-mix(in srgb, var(--rich-black) 58%, var(--white-smoke));
 	--bg: var(--white-smoke);
-	--line: color-mix(in srgb, var(--rich-black) 9%, var(--white-smoke));
-	--line-strong: color-mix(in srgb, var(--rich-black) 20%, var(--white-smoke));
+	--line: color-mix(in srgb, var(--rich-black) 10%, var(--white-smoke));
+	--line-strong: color-mix(in srgb, var(--rich-black) 22%, var(--white-smoke));
 	--field-line: color-mix(in srgb, var(--rich-black), transparent 65%);
 	--field-line-focus: color-mix(in srgb, var(--rich-black), transparent 45%);
 	--zebra: hsl(0 0% 0% / 0.05);
+	// Lignes de tableau : rayure très légère (bleu à 6 %), survol un cran au-dessus
+	--row-stripe: color-mix(in srgb, var(--color-primary) 6%, var(--paper));
+	--row-hover: color-mix(in srgb, var(--color-primary) 12%, var(--paper));
 
 	--display: 'Poppins', system-ui, sans-serif;
 	--text: 'Poppins', system-ui, sans-serif;
@@ -109,7 +112,8 @@ $bp-lg: 1024px;
 	--wrap-narrow: 38rem;
 
 	--focus-ring: 0 0 0 3px color-mix(in srgb, var(--blue-dark) 35%, transparent);
-	--shadow-card: 0 4px 6px hsl(0 0% 0% / 0.12), 0 5px 15px hsl(0 0% 0% / 0.14);
+	--shadow-card:
+		0 0 0 1px hsl(206 30% 20% / 0.04), 0 4px 6px hsl(0 0% 0% / 0.1), 0 5px 15px hsl(0 0% 0% / 0.12);
 
 	// Onglets du drapeau (70 × 50 px, rayons 1,5em / 4px)
 	--tab-w: 70px;

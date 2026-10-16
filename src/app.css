@@ -7,8 +7,8 @@
 	prefersdark: false;
 	color-scheme: 'light';
 	/* Palette v1 : bleu ciel, rouge et vert du drapeau, noir riche, fumée blanche */
-	--color-base-100: hsl(30 8% 95%);
-	--color-base-200: hsl(30 6% 90%);
+	--color-base-100: hsl(30 8% 98%);
+	--color-base-200: hsl(30 6% 92%);
 	--color-base-300: hsl(30 5% 84%);
 	--color-base-content: hsl(206 80% 4%);
 	--color-primary: hsl(194 66% 61%);
@@ -18,7 +18,7 @@
 	--color-accent: hsl(150 99% 27%);
 	--color-accent-content: hsl(0 0% 100%);
 	--color-neutral: hsl(206 80% 4%);
-	--color-neutral-content: hsl(30 8% 95%);
+	--color-neutral-content: hsl(30 8% 98%);
 	--color-info: hsl(194 66% 61%);
 	--color-info-content: hsl(206 80% 4%);
 	--color-success: hsl(105 100% 34%);
