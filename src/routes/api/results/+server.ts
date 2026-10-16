@@ -1,34 +1,48 @@
-import { json } from "@sveltejs/kit";
-import type { RequestHandler } from "./$types";
+import { json } from '@sveltejs/kit';
+import type { RequestHandler } from './$types';
+import {
+	defaultYear,
+	findByNumero,
+	getMeta,
+	loadDataset,
+	listYears,
+	search
+} from '$lib/server/data';
 
-export const GET: RequestHandler = async ({ locals, url }) => {
-  if (!locals.pb) {
-    console.error('API: PocketBase instance is not available!')
-    return json({ error: 'Server configuration error' }, { status: 500 })
-  }
+/**
+ * GET /api/results                      -> métadonnées (années disponibles, totaux)
+ * GET /api/results?annee=2025           -> jeu de données complet de l'année
+ * GET /api/results?annee=2025&n=123456  -> un candidat (404 si absent)
+ * GET /api/results?annee=2025&search=ra -> 20 premiers résultats correspondants
+ */
+export const GET: RequestHandler = async ({ url, setHeaders }) => {
+	const anneeParam = url.searchParams.get('annee');
+	const n = url.searchParams.get('n')?.trim();
+	const q = url.searchParams.get('search')?.trim();
 
-  try {
-    console.log('API: Fetching results from database...')
+	if (!anneeParam && !n && !q) {
+		setHeaders({ 'cache-control': 'public, max-age=300' });
+		return json(await getMeta());
+	}
 
-    const search = url.searchParams.get('search')?.trim();
+	const annee = Number(anneeParam ?? defaultYear());
+	if (!listYears().includes(annee)) {
+		return json({ error: `Année inconnue : ${anneeParam}` }, { status: 404 });
+	}
 
-    let filter = 'created>="2025-01-01"';
+	if (n) {
+		const r = await findByNumero(annee, n);
+		if (!r) return json({ error: 'Candidat introuvable' }, { status: 404 });
+		setHeaders({ 'cache-control': 'public, max-age=3600' });
+		return json(r);
+	}
 
-    // Add search filter if search parameter exists
-    if (search) {
-      const searchFilter = `(matricule~"${search}" || first_name~"${search}" || last_name~"${search}")`;
-      filter = `${filter} && ${searchFilter}`;
-    }
+	if (q) {
+		setHeaders({ 'cache-control': 'public, max-age=300' });
+		return json(await search(annee, q));
+	}
 
-    const examResults = await locals.pb.collection('results').getList(1, 20, {
-      filter: filter,
-    })
-
-    console.log(`API: Successfully fetched ${examResults.items.length} results${search ? ` for search: "${search}"` : ''}`)
-
-    return json(examResults.items)
-  } catch (error: any) {
-    console.error('API: Error fetching results', error)
-    return json({ error: 'Failed to retrieve results', details: error.message }, { status: 500 })
-  }
-}
+	const ds = await loadDataset(annee);
+	setHeaders({ 'cache-control': 'public, max-age=86400, stale-while-revalidate=604800' });
+	return json(ds);
+};
