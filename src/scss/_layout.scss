@@ -86,46 +86,79 @@ main {
 }
 
 .site-footer {
-	margin-top: 5rem;
-	padding: 1.5rem 0 2rem;
-	font-size: var(--fs-xs);
-	color: var(--ink-2);
+	margin-top: 4rem;
+	border-top: 1px solid var(--line-strong);
 
 	.wrap {
 		display: flex;
 		flex-wrap: wrap;
+		align-items: center;
 		justify-content: space-between;
-		gap: 0.75rem 2rem;
-		padding-top: 1.5rem;
-		border-top: 1px solid var(--line);
+		gap: 1.5rem;
+		padding-block: 2rem;
 	}
 
-	.demo {
+	.author {
 		display: flex;
-		gap: 0.6rem;
-		max-width: 46rem;
-		line-height: 1.5;
+		align-items: center;
+		gap: 0.875rem;
+	}
 
-		&::before {
-			content: '';
-			flex: none;
-			width: 0.5rem;
-			height: 0.5rem;
-			margin-top: 0.4em;
-			border-radius: 50%;
-			background: var(--red);
-		}
-		strong {
-			color: var(--ink);
+	// Superellipse façon iOS
+	.squircle {
+		width: 3rem;
+		height: 3rem;
+		object-fit: cover;
+		mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Cpath d='M100 0C20 0 0 20 0 100s20 100 100 100 100-20 100-100S180 0 100 0Z'/%3E%3C/svg%3E")
+			center / 100% 100% no-repeat;
+	}
+
+	.label {
+		font-size: 0.75rem;
+		color: var(--ink-3);
+	}
+
+	.who {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
+
+		a {
+			display: inline-flex;
+			color: var(--ink-3);
+			transition: color 0.15s;
+
+			&:hover {
+				color: var(--ink);
+			}
 		}
 	}
 
-	a {
+	.name {
+		font-weight: 700;
+		letter-spacing: -0.02em;
 		color: var(--ink);
-		font-weight: 600;
-		text-decoration: none;
-		&:hover {
-			text-decoration: underline;
+	}
+
+	.colophon {
+		text-align: right;
+		font-size: 0.875rem;
+		color: var(--ink-2);
+	}
+
+	.mono {
+		margin-top: 0.125rem;
+		font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+		font-size: 0.75rem;
+	}
+
+	@media (max-width: #{$bp-md - 1px}) {
+		.wrap {
+			flex-direction: column;
+			align-items: flex-start;
+		}
+		.colophon {
+			text-align: left;
 		}
 	}
 }
