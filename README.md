@@ -3,18 +3,24 @@
 Site de consultation des résultats du Baccalauréat malgache. Statique, sans base de
 données : toutes les données vivent dans des fichiers JSON embarqués au build.
 SvelteKit (Svelte 5, runes) + SCSS, exécuté avec Bun, déployé sur Cloudflare (Workers / Pages).
+Police Lato auto-hébergée (Fontsource), aucune bibliothèque d'UI ni de graphiques supplémentaire.
 
 Fonctionnalités :
 
 - **Vérifier mon résultat** : saisie du numéro de candidat dans le hero → fiche directe.
 - **Recherche instantanée** par numéro ou nom/prénoms (insensible à la casse et aux accents, debounce).
 - **Filtres** : série, province, observation (admis / 2e session / ajourné), mention.
-- **Fiche candidat** (modal accessible : `Esc`, focus piégé, bouton Fermer) avec **URL partageable**
-  `/?annee=2025&n=123456`, bouton _Partager_ (Web Share, repli copie) et _Copier le lien_.
+- **Relevé candidat** : modale accessible (`Esc`, focus piégé) sur la page d'accueil, et page
+  autonome `/resultat/<annee>/<numero>` rendue côté serveur avec balises Open Graph (nom + statut),
+  c'est l'URL utilisée par _Partager_ (Web Share, repli copie) et _Copier le lien_.
+- **Résultats par établissement** : `/etablissements/<annee>` classe les lycées par taux de
+  réussite ; `?ecole=…` affiche la fiche d'un lycée et la liste de ses admis.
+- **Raccourci** : `/` focalise la recherche.
 - **Statistiques** : taux de réussite global, par série, par province, répartition des mentions
-  (barres CSS, aucune lib de graphiques).
+  (barres CSS, aucune lib de graphiques), repliables.
 - **Exports** : PDF (impression navigateur de la liste filtrée) et CSV (`;`, UTF-8 BOM, prêt pour Excel).
-- **Pagination** (50 lignes/page) pour rester fluide avec plusieurs milliers de candidats.
+- **Liste** : tableau à partir de 768 px, cartes en dessous ; barre de filtres collante ;
+  pagination (50 lignes/page).
 - **Hors-ligne** : service worker (`src/service-worker.ts`) – assets pré-cachés, JSON des résultats
   en _stale-while-revalidate_. Un candidat peut rouvrir son résultat sans réseau.
 - **Sélecteur d'année** : un fichier JSON par année.
@@ -99,8 +105,8 @@ ci-dessus et le déposer dans `src/lib/data/`.
 bun run deploy     # build + wrangler pages deploy
 ```
 
-La configuration est dans `wrangler.jsonc`. Aucune variable d'environnement ni binding
-n'est nécessaire : les données sont dans le bundle.
+La configuration est dans `wrangler.jsonc` (`nodejs_compat` activé pour `node:async_hooks`).
+Aucune variable d'environnement ni binding n'est nécessaire : les données sont dans le bundle.
 
 ## Structure
 
@@ -111,9 +117,13 @@ src/lib/server/data.ts            chargement / recherche côté serveur
 src/lib/types.ts                  types et listes de valeurs (séries, provinces…)
 src/lib/stats.ts                  calcul des statistiques
 src/lib/utils/{normalize,csv,share}.ts
-src/lib/landing/                  hero (quickCheck), stats, table
+src/lib/landing/                  hero, stats, table (tableau / cartes)
+src/lib/components/ResultCard.svelte  le relevé (modale et page autonome)
+src/lib/components/Icon.svelte    icônes SVG intégrées (aucun appel réseau)
 src/lib/components/table/         FilterBar, Pagination, Modal, PDFexport, CSVexport
+src/routes/resultat/[annee]/[numero]  page autonome d'un résultat (SSR + Open Graph)
+src/routes/etablissements/[annee] résultats par lycée
 src/routes/api/results/+server.ts endpoint JSON
 src/service-worker.ts             cache hors-ligne
-src/scss/                         styles (variables dans shared/_var.scss)
+src/scss/                         styles (jetons dans _tokens.scss ; palette = thème daisyUI de app.css)
 ```
