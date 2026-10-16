@@ -119,12 +119,19 @@ a {
 	}
 }
 
-// Mention : trait de surligneur à mi-hauteur (v1)
+// Mention : trait de surligneur fin (v1), posé sur le bas des lettres (de mi-hauteur d'x à
+// la ligne de base), de la largeur du texte seulement. Poppins : zone de contenu ≈ 1,4 em,
+// ligne de base à ≈ 75 %.
 .hl {
-	background: linear-gradient(transparent 50%, var(--hl, transparent) 50%);
+	background: linear-gradient(
+		transparent 54%,
+		var(--hl, transparent) 54%,
+		var(--hl, transparent) 80%,
+		transparent 80%
+	);
 	-webkit-box-decoration-break: clone;
 	box-decoration-break: clone;
-	padding-inline: 0.1em;
+	padding-inline: 0;
 	font-weight: 500;
 
 	&[data-mention='très bien'] {
