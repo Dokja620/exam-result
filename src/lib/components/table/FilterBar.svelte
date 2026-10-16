@@ -30,7 +30,7 @@
 
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
-	import { MediaQuery } from '$lib/utils/media.svelte';
+	import Popover from '$lib/components/Popover.svelte';
 
 	let {
 		search = $bindable(''),
@@ -48,16 +48,12 @@
 
 	let input: HTMLInputElement | undefined = $state();
 	let trigger: HTMLButtonElement | undefined = $state();
-	let dialog: HTMLDialogElement | undefined = $state();
+	let popover: Popover | undefined = $state();
 	let open = $state(false);
-	let anchor = $state({ top: 0, left: 0 });
 
 	$effect(() => {
 		if (autofocus) input?.focus();
 	});
-
-	// Popover ancré au bouton à partir de 768 px, feuille en bas d'écran en dessous
-	const wide = new MediaQuery('(min-width: 768px)', true);
 
 	const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
 	const GROUPS: {
@@ -83,29 +79,11 @@
 	);
 	const fmt = (n: number) => n.toLocaleString('fr-FR');
 
-	function place() {
-		if (!trigger) return;
-		const r = trigger.getBoundingClientRect();
-		const width = Math.min(440, window.innerWidth - 32);
-		anchor = {
-			top: Math.round(r.bottom + 8),
-			left: Math.round(Math.min(Math.max(16, r.right - width), window.innerWidth - width - 16))
-		};
-	}
-
 	function show() {
-		if (!dialog) return;
-		place();
-		dialog.showModal();
-		open = true;
+		if (trigger) popover?.show(trigger);
 	}
 	function hide() {
-		dialog?.close();
-	}
-
-	// Clic sur le fond (la zone hors du panneau appartient au <dialog> lui-même)
-	function onDialogClick(e: MouseEvent) {
-		if (e.target === dialog) hide();
+		popover?.hide();
 	}
 
 	function removeFilter(k: keyof Filters) {
@@ -133,7 +111,7 @@
 	}
 </script>
 
-<svelte:window onkeydown={onKey} onresize={() => open && place()} />
+<svelte:window onkeydown={onKey} />
 
 <div class="filterbar">
 	<div class="filterbar-row">
@@ -191,52 +169,40 @@
 	{/if}
 </div>
 
-<dialog
-	bind:this={dialog}
+<Popover
+	bind:this={popover}
+	bind:open
 	id="filtres-dialog"
-	class="filters-dialog"
-	class:sheet={!wide.current}
-	aria-labelledby="filtres-titre"
-	style="--top: {anchor.top}px; --left: {anchor.left}px"
-	onclick={onDialogClick}
-	onclose={() => (open = false)}
+	title="Filtres"
+	width={440}
+	class="filters-pop"
 >
-	<div class="panel">
-		<header>
-			<span class="grip" aria-hidden="true"></span>
-			<h2 id="filtres-titre">Filtres</h2>
-			<button class="close" type="button" aria-label="Fermer les filtres" onclick={hide}>
-				<Icon name="x" size={18} />
-			</button>
-		</header>
-
-		<div class="groups">
-			{#each GROUPS as g (g.key)}
-				<fieldset>
-					<legend>{g.legend}</legend>
-					<div class="opts">
+	<div class="groups">
+		{#each GROUPS as g (g.key)}
+			<fieldset>
+				<legend>{g.legend}</legend>
+				<div class="opts">
+					<label class="opt">
+						<input type="radio" name="f-{g.key}" value="" bind:group={filters[g.key]} />
+						<span>{g.all}</span>
+					</label>
+					{#each FILTER_OPTIONS[g.key] as v (v)}
 						<label class="opt">
-							<input type="radio" name="f-{g.key}" value="" bind:group={filters[g.key]} />
-							<span>{g.all}</span>
+							<input type="radio" name="f-{g.key}" value={v} bind:group={filters[g.key]} />
+							<span>{g.label(v)}</span>
 						</label>
-						{#each FILTER_OPTIONS[g.key] as v (v)}
-							<label class="opt">
-								<input type="radio" name="f-{g.key}" value={v} bind:group={filters[g.key]} />
-								<span>{g.label(v)}</span>
-							</label>
-						{/each}
-					</div>
-				</fieldset>
-			{/each}
-		</div>
-
-		<footer>
-			<button class="button text" type="button" onclick={resetFilters} disabled={!chips.length}>
-				Réinitialiser
-			</button>
-			<button class="button" type="button" onclick={hide}>
-				Voir {fmt(count)} résultat{count > 1 ? 's' : ''}
-			</button>
-		</footer>
+					{/each}
+				</div>
+			</fieldset>
+		{/each}
 	</div>
-</dialog>
+
+	{#snippet footer()}
+		<button class="button text" type="button" onclick={resetFilters} disabled={!chips.length}>
+			Réinitialiser
+		</button>
+		<button class="button" type="button" onclick={hide}>
+			Voir {fmt(count)} résultat{count > 1 ? 's' : ''}
+		</button>
+	{/snippet}
+</Popover>

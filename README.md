@@ -20,7 +20,12 @@ Fonctionnalités :
   (`?serie=&province=&statut=&mention=`).
 - **Relevé candidat** : modale accessible (`Esc`, focus piégé) sur la page d'accueil, et page
   autonome `/resultat/<annee>/<numero>` rendue côté serveur avec balises Open Graph (nom + statut),
-  c'est l'URL utilisée par _Partager_ (Web Share, repli copie) et _Copier le lien_.
+  c'est l'URL utilisée par le partage. Deux appels à l'action sur le relevé :
+  _Obtenir mon relevé de notes_ (principal) et _Partager_, qui ouvre un menu (popover ≥ 768 px,
+  feuille en bas d'écran en dessous) : partage natif si disponible (avec l'image générée au
+  `<canvas>`, 1080 × 1350), WhatsApp, Facebook, _Télécharger l'image_ et _Copier le lien_
+  (repli `execCommand` hors contexte sécurisé, ex. http sur le réseau local). Ctrl+P imprime le
+  relevé sur une page A4 avec QR code et date.
 - **Relevé de notes** : `/resultat/<annee>/<numero>/releve`, feuille A4 (matière, coef., note,
   points, totaux, moyenne, mention, décision, QR vers le résultat, date). « Télécharger en PDF »
   ouvre l'impression (choisir « Enregistrer en PDF »). Filigrane diagonal « DONNÉES FICTIVES —
@@ -152,6 +157,9 @@ src/lib/utils/{normalize,csv,share}.ts
 src/lib/landing/                  hero (saisie du numéro), stats (la session en chiffres)
 src/lib/utils/dataset.svelte.ts   chargement client d'une année (partagé accueil / liste)
 src/lib/components/ResultCard.svelte  le relevé (modale et page autonome)
+src/lib/components/Popover.svelte  panneau ancré / feuille mobile (filtres, partage)
+src/lib/components/Qr.svelte      QR code (qrcode-generator, importé à la demande)
+src/lib/utils/share-image.ts      image de partage au <canvas>
 src/lib/components/Icon.svelte    icônes SVG intégrées (aucun appel réseau)
 src/lib/components/table/         ResultsList, FilterBar, Pagination, Modal, PDFexport, CSVexport
 src/routes/liste/[annee]          parcourir tous les résultats

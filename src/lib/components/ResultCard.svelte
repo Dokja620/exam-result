@@ -10,7 +10,7 @@
 		whatsappUrl
 	} from '$lib/utils/share';
 	import { shareImageBlob, shareImageName } from '$lib/utils/share-image';
-	import { tick } from 'svelte';
+	import Popover from '$lib/components/Popover.svelte';
 	import Qr from '$lib/components/Qr.svelte';
 	import type { Result } from '$lib/types';
 
@@ -34,7 +34,8 @@
 		timer = setTimeout(() => (announce = feedback = ''), 4000);
 	}
 
-	// ---- Partager : image générée au survol / focus du bouton, pour garder le geste utilisateur
+	// ---- Partager : un menu (popover / feuille) qui regroupe toutes les options -------------
+	// L'image est préparée dès l'ouverture du menu : le partage natif garde le geste utilisateur.
 	let image: Promise<Blob | null> | null = null;
 	let imageFor = '';
 	function prepareImage(): Promise<Blob | null> {
@@ -45,65 +46,41 @@
 		return image;
 	}
 
-	let menuOpen = $state(false);
-	let sharing = $state(false);
+	let popover: Popover | undefined = $state();
 	let shareBtn: HTMLButtonElement | undefined = $state();
-	let menu: HTMLDivElement | undefined = $state();
+	let menuOpen = $state(false);
+	let canNative = $state(false);
+	// Le menu (liens absolus, <dialog>) n'existe que côté navigateur
+	let mounted = $state(false);
+	$effect(() => {
+		canNative = typeof navigator.share === 'function';
+		mounted = true;
+	});
 
-	async function share() {
-		if (menuOpen) return closeMenu();
-		sharing = true;
+	function openShare() {
+		prepareImage();
+		if (shareBtn) popover?.show(shareBtn);
+	}
+
+	async function shareNative() {
 		const blob = await prepareImage();
 		const file = blob
 			? new File([blob], shareImageName(result, annee), { type: 'image/png' })
 			: null;
 		const r = await shareResult(result, annee, file);
-		sharing = false;
-		if (r === 'menu') openMenu();
-	}
-
-	async function openMenu() {
-		menuOpen = true;
-		await tick();
-		menu?.querySelector<HTMLElement>('a, button')?.focus();
-	}
-	function closeMenu(refocus = true) {
-		menuOpen = false;
-		if (refocus) shareBtn?.focus();
-	}
-	function onMenuKey(e: KeyboardEvent) {
-		if (e.key === 'Escape') {
-			e.preventDefault();
-			e.stopPropagation(); // ne ferme pas la modale qui contient la carte
-			closeMenu();
-			return;
-		}
-		if (e.key !== 'ArrowDown' && e.key !== 'ArrowUp') return;
-		e.preventDefault();
-		const items = [...(menu?.querySelectorAll<HTMLElement>('a, button') ?? [])];
-		const i = items.indexOf(document.activeElement as HTMLElement);
-		const n = e.key === 'ArrowDown' ? i + 1 : i - 1;
-		items[(n + items.length) % items.length]?.focus();
-	}
-	function onOutside(e: PointerEvent) {
-		if (!menuOpen) return;
-		const t = e.target as Node;
-		if (menu?.contains(t) || shareBtn?.contains(t)) return;
-		closeMenu(false);
+		if (r === 'shared') popover?.hide();
+		else if (r === 'menu') flash('Partage impossible sur cet appareil', true);
 	}
 	async function downloadImage() {
 		const blob = await prepareImage();
-		closeMenu();
 		if (blob) {
 			downloadBlob(blob, shareImageName(result, annee));
 			flash('Image téléchargée');
+			popover?.hide();
 		} else flash('L’image n’a pas pu être créée sur cet appareil', true);
 	}
-	async function copyFromMenu() {
-		closeMenu();
-		await copy();
-	}
-	// « Copier le lien » : le bouton se transforme ~2 s, l'annonce passe par la région live
+
+	// « Copier le lien » : la ligne du menu se transforme ~2 s (coche + « Lien copié »)
 	let copied = $state(false);
 	let copyTimer: ReturnType<typeof setTimeout>;
 	async function copy() {
@@ -137,8 +114,6 @@
 		result.moyenne.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 })
 	);
 </script>
-
-<svelte:window onpointerdown={onOutside} />
 
 <article class="releve" class:enter data-statut={result.statut} aria-labelledby="releve-statut">
 	<header class="verdict">
@@ -209,7 +184,7 @@
 
 		<p class="mot">
 			{#if admis}
-				Félicitations. Gardez ce relevé (lien ou impression) pour vos inscriptions.
+				Félicitations. Gardez ce lien et votre relevé de notes pour vos inscriptions.
 			{:else if deuxieme}
 				Il manque peu de points. Les dates et le lieu des épreuves de seconde session sont
 				communiqués par votre lycée et votre CISCO.
@@ -221,71 +196,80 @@
 	</div>
 
 	<div class="actions">
-		<div class="share-wrap">
-			<button
-				bind:this={shareBtn}
-				class="button share"
-				type="button"
-				aria-haspopup="true"
-				aria-expanded={menuOpen}
-				aria-controls="share-menu-{result.id}"
-				aria-busy={sharing}
-				onclick={share}
-				onpointerenter={prepareImage}
-				onfocus={prepareImage}
-				ontouchstart={prepareImage}
-			>
-				<Icon name="share" size={18} />
-				Partager
-			</button>
-			{#if menuOpen}
-				<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
-				<div
-					bind:this={menu}
-					id="share-menu-{result.id}"
-					class="share-menu"
-					role="group"
-					aria-label="Partager le résultat"
-					onkeydown={onMenuKey}
-				>
-					<a
-						href={whatsappUrl(result, annee)}
-						target="_blank"
-						rel="noopener noreferrer"
-						onclick={() => closeMenu(false)}
-					>
-						<Icon name="whatsapp" size={18} /> WhatsApp
-					</a>
-					<a
-						href={facebookUrl(result, annee)}
-						target="_blank"
-						rel="noopener noreferrer"
-						onclick={() => closeMenu(false)}
-					>
-						<Icon name="facebook" size={18} /> Facebook
-					</a>
-					<button type="button" onclick={downloadImage}>
-						<Icon name="photo" size={18} /> Télécharger l’image
-					</button>
-					<button type="button" onclick={copyFromMenu}>
-						<Icon name="link" size={18} /> Copier le lien
-					</button>
-				</div>
-			{/if}
-		</div>
-		<a class="button ghost fiche" href="{resultPath(annee, result.numero)}/releve">
+		<a
+			class="button cta"
+			href="{resultPath(annee, result.numero)}/releve"
+			aria-label="Obtenir mon relevé de notes"
+		>
 			<Icon name="file-text" size={18} />
-			Obtenir ma fiche relevé de notes
+			<span class="l-full">Obtenir mon relevé de notes</span>
+			<span class="l-mid">Mon relevé de notes</span>
+			<span class="l-short">Mon relevé</span>
 		</a>
-		<button class="button text copy" class:done={copied} type="button" onclick={copy}>
-			<Icon name={copied ? 'check' : 'link'} size={18} />
-			{copied ? 'Lien copié' : 'Copier le lien'}
-		</button>
-		<button class="button text" type="button" onclick={() => window.print()}>
-			<Icon name="printer" size={18} />
-			Imprimer
+		<button
+			bind:this={shareBtn}
+			class="button ghost cta"
+			type="button"
+			aria-haspopup="dialog"
+			aria-expanded={menuOpen}
+			aria-controls="partage-{result.id}"
+			onclick={openShare}
+		>
+			<Icon name="share" size={18} />
+			Partager
 		</button>
 	</div>
+	<p class="feedback">{menuOpen ? '' : feedback}</p>
+
+	{#if mounted}
+		<Popover
+			bind:this={popover}
+			bind:open={menuOpen}
+			id="partage-{result.id}"
+			title="Partager le résultat"
+			width={320}
+			align="end"
+			class="share-pop"
+		>
+			<ul class="pop-list">
+				{#if canNative}
+					<li>
+						<button type="button" onclick={shareNative}>
+							<span class="ico"><Icon name="share" size={18} /></span>
+							Partager via…
+						</button>
+					</li>
+				{/if}
+				<li>
+					<a href={whatsappUrl(result, annee)} target="_blank" rel="noopener noreferrer">
+						<span class="ico"><Icon name="whatsapp" size={18} /></span>
+						WhatsApp
+					</a>
+				</li>
+				<li>
+					<a href={facebookUrl(result, annee)} target="_blank" rel="noopener noreferrer">
+						<span class="ico"><Icon name="facebook" size={18} /></span>
+						Facebook
+					</a>
+				</li>
+				<li>
+					<button type="button" onclick={downloadImage}>
+						<span class="ico"><Icon name="photo" size={18} /></span>
+						Télécharger l’image
+					</button>
+				</li>
+				<li>
+					<button type="button" class:done={copied} onclick={copy}>
+						<span class="ico"><Icon name={copied ? 'check' : 'link'} size={18} /></span>
+						{copied ? 'Lien copié' : 'Copier le lien'}
+					</button>
+				</li>
+			</ul>
+			<p class="sr-only" aria-live="polite">{menuOpen ? announce : ''}</p>
+			{#if menuOpen && feedback}<p class="pop-msg">{feedback}</p>{/if}
+		</Popover>
+	{/if}
+
 	<div class="print-foot" aria-hidden="true">
 		<Qr value={printUrl} label="QR code du résultat en ligne" />
 		<div>
@@ -294,6 +278,5 @@
 			<p class="fictif">Données fictives, document non officiel</p>
 		</div>
 	</div>
-	<p class="sr-only" aria-live="polite">{announce}</p>
-	<p class="feedback">{feedback}</p>
+	<p class="sr-only" aria-live="polite">{menuOpen ? '' : announce}</p>
 </article>
