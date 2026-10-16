@@ -1,55 +1,21 @@
 <script lang="ts">
-	import Table from '$lib/landing/table.svelte';
 	import Stats from '$lib/landing/stats.svelte';
 	import Hero from '$lib/landing/hero.svelte';
+	import Icon from '$lib/components/Icon.svelte';
 	import Modal from '$lib/components/table/Modal.svelte';
 	import { goto, replaceState } from '$app/navigation';
 	import { browser } from '$app/environment';
 	import { resultPath } from '$lib/utils/share';
-	import type { Dataset, Result } from '$lib/types';
+	import { YearData } from '$lib/utils/dataset.svelte';
+	import { fmtInt } from '$lib/stats';
+	import type { Result } from '$lib/types';
 
 	let { data } = $props();
 
-	// ---- Jeu de données de l'année courante (chargé côté client, mis en cache) ----
-	const cache = new Map<number, Result[]>();
-	let rows = $state<Result[]>([]);
-	let loading = $state(true);
-	let loadError = $state('');
-
-	async function loadYear(annee: number) {
-		const hit = cache.get(annee);
-		if (hit) {
-			rows = hit;
-			loading = false;
-			return;
-		}
-		loading = true;
-		loadError = '';
-		try {
-			const url = `/api/results?annee=${annee}`;
-			const res = await fetch(url);
-			if (!res.ok) throw new Error(`HTTP ${res.status}`);
-			// Copie dans le cache hors-ligne (même cache que le service worker), utile dès
-			// la première visite, avant que le service worker ne contrôle la page.
-			if ('caches' in window) {
-				caches
-					.open('results-data-v1')
-					.then((c) => c.put(url, res.clone()))
-					.catch(() => undefined);
-			}
-			const ds: Dataset = await res.json();
-			cache.set(annee, ds.results);
-			rows = ds.results;
-		} catch (e) {
-			loadError = 'Vérifiez votre connexion puis réessayez.';
-			console.error(e);
-		} finally {
-			loading = false;
-		}
-	}
-
+	// Jeu de données de l'année : sert aux chiffres et à la vérification hors-ligne
+	const ds = new YearData();
 	$effect(() => {
-		if (browser) loadYear(data.annee);
+		if (browser) ds.load(data.annee);
 	});
 
 	// ---- Candidat sélectionné (modale) + URL partageable ?n= ----
@@ -69,28 +35,25 @@
 		replaceState(url, {});
 	}
 
-	function select(r: Result) {
-		selected = r;
-		notFound = '';
-		syncUrl(r.numero);
+	function checkNumero(numero: string) {
+		const n = numero.trim();
+		if (!n) return;
+		if (!ds.rows.length) {
+			// Données pas encore là : la page autonome répond côté serveur
+			goto(resultPath(data.annee, n));
+			return;
+		}
+		const r = ds.rows.find((x) => x.numero === n);
+		if (r) {
+			selected = r;
+			notFound = '';
+			syncUrl(r.numero);
+		} else notFound = n;
 	}
 
 	function closeModal() {
 		selected = null;
 		syncUrl(null);
-	}
-
-	function checkNumero(numero: string) {
-		const n = numero.trim();
-		if (!n) return;
-		if (!rows.length) {
-			// Données pas encore là : la page autonome répond côté serveur
-			goto(resultPath(data.annee, n));
-			return;
-		}
-		const r = rows.find((x) => x.numero === n);
-		if (r) select(r);
-		else notFound = n;
 	}
 
 	function changeYear(annee: number) {
@@ -99,6 +62,8 @@
 		url.searchParams.delete('n');
 		goto(url, { keepFocus: true, noScroll: true });
 	}
+
+	const total = $derived(data.meta.totaux[String(data.annee)] ?? ds.rows.length);
 </script>
 
 <svelte:head>
@@ -109,26 +74,51 @@
 	/>
 </svelte:head>
 
-<Hero
-	annees={data.meta.annees}
-	annee={data.annee}
-	{loading}
-	{notFound}
-	onCheck={checkNumero}
-	onYearChange={changeYear}
-/>
+<div class="home wrap">
+	<Hero
+		annees={data.meta.annees}
+		annee={data.annee}
+		loading={ds.loading && !ds.error}
+		{notFound}
+		onCheck={checkNumero}
+		onYearChange={changeYear}
+	/>
 
-{#if rows.length}
-	<Stats {rows} annee={data.annee} />
-{/if}
+	<aside class="home-side">
+		{#if ds.rows.length}
+			<Stats rows={ds.rows} annee={data.annee} />
+		{:else if ds.error}
+			<div class="notice" role="alert">
+				<Icon name="wifi-off" size={24} />
+				<strong>Les chiffres {data.annee} n'ont pas pu être chargés.</strong>
+				<span>{ds.error}</span>
+				<button class="button ghost" type="button" onclick={() => ds.load(data.annee)}
+					>Réessayer</button
+				>
+			</div>
+		{:else}
+			<div class="overview-skeleton" aria-hidden="true"></div>
+		{/if}
 
-<Table
-	{rows}
-	{loading}
-	error={loadError}
-	annee={data.annee}
-	onSelect={select}
-	onRetry={() => loadYear(data.annee)}
-/>
+		<nav class="explore" aria-label="Explorer les résultats">
+			<a href="/liste/{data.annee}">
+				<span>
+					<b>Parcourir tous les résultats</b>
+					<small
+						>{total ? `${fmtInt(total)} candidats` : 'Tous les candidats'}, recherche et filtres</small
+					>
+				</span>
+				<Icon name="arrow-right" size={20} />
+			</a>
+			<a href="/etablissements/{data.annee}">
+				<span>
+					<b>Classement des lycées</b>
+					<small>Taux de réussite et admis par établissement</small>
+				</span>
+				<Icon name="arrow-right" size={20} />
+			</a>
+		</nav>
+	</aside>
+</div>
 
 <Modal {selected} annee={data.annee} onClose={closeModal} />
