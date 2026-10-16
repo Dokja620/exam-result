@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { goto } from '$app/navigation';
 	import Icon from '$lib/components/Icon.svelte';
 	import { fmtInt, fmtPct } from '$lib/stats';
@@ -24,17 +25,18 @@
 	}
 </script>
 
-<svelte:head>
-	<title>
-		{data.fiche
-			? `${data.fiche.label}, BAC ${data.annee}`
-			: `Résultats par établissement, BAC ${data.annee}`}
-	</title>
-	<meta
-		name="description"
-		content="Taux de réussite au BAC {data.annee} par lycée et liste des admis de chaque établissement, Madagascar."
-	/>
-</svelte:head>
+<Seo
+	title={data.fiche
+		? `${data.fiche.label}, BAC ${data.annee}`
+		: `Résultats par établissement, BAC ${data.annee}`}
+	description={data.fiche
+		? `${data.fiche.label} (${data.fiche.cisco}, ${data.fiche.province}) : ${fmtPct(data.fiche.taux)} de réussite au BAC ${data.annee}, ${data.fiche.admis} admis sur ${data.fiche.total} candidats.`
+		: `Taux de réussite au BAC ${data.annee} par lycée et liste des admis de chaque établissement, Madagascar.`}
+	path={data.fiche
+		? `/etablissements/${data.annee}?ecole=${encodeURIComponent(data.fiche.label)}`
+		: `/etablissements/${data.annee}`}
+	image="lycees"
+/>
 
 <div class="etab wrap">
 	<header class="page-head">

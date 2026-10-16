@@ -1,10 +1,13 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import { page } from '$app/state';
 </script>
 
-<svelte:head>
-	<title>{page.status === 404 ? 'Introuvable' : 'Erreur'}, Résultats du BAC</title>
-</svelte:head>
+<Seo
+	title="{page.status === 404 ? 'Introuvable' : 'Erreur'}, Résultats du BAC"
+	description="Consultez votre résultat au Baccalauréat à Madagascar par numéro de candidat, ou parcourez les résultats par nom, série et établissement."
+	noindex
+/>
 
 <div class="error-page wrap wrap-narrow">
 	<p class="big-code" aria-hidden="true">{page.status}</p>

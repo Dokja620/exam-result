@@ -2,7 +2,8 @@
 	import { page } from '$app/state';
 	import Icon from '$lib/components/Icon.svelte';
 	import Qr from '$lib/components/Qr.svelte';
-	import { resultPath } from '$lib/utils/share';
+	import Seo from '$lib/components/Seo.svelte';
+	import { resultPath, shareText } from '$lib/utils/share';
 
 	let { data } = $props();
 
@@ -42,10 +43,15 @@
 	const WATERMARK = 'DONNÉES FICTIVES — DOCUMENT NON OFFICIEL';
 </script>
 
-<svelte:head>
-	<title>Relevé de notes, {r.nom} {r.prenoms}, BAC {data.annee} (données fictives)</title>
-	<meta name="robots" content="noindex" />
-</svelte:head>
+<Seo
+	title="Relevé de notes, {r.nom} {r.prenoms}, BAC {data.annee} (données fictives)"
+	description="Relevé de notes de {shareText(
+		r,
+		data.annee
+	)} Données fictives, document non officiel."
+	path="{back}/releve"
+	noindex
+/>
 
 <div class="transcript-page wrap">
 	<div class="transcript-tools">

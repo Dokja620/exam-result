@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import ResultsList from '$lib/components/table/ResultsList.svelte';
 	import Modal, { preloadResultCard } from '$lib/components/table/Modal.svelte';
 	import { goto, replaceState } from '$app/navigation';
@@ -39,13 +40,12 @@
 	const years = $derived([...data.meta.annees].sort((a, b) => b - a));
 </script>
 
-<svelte:head>
-	<title>Tous les résultats du BAC {data.annee}, Madagascar</title>
-	<meta
-		name="description"
-		content="Liste des candidats au BAC {data.annee} à Madagascar : recherche par nom ou numéro, filtres par série, province, résultat et mention."
-	/>
-</svelte:head>
+<Seo
+	title="Tous les résultats du BAC {data.annee}, Madagascar"
+	description="Liste des candidats au BAC {data.annee} à Madagascar : recherche par nom ou numéro, filtres par série, province, résultat et mention."
+	path="/liste/{data.annee}"
+	image="liste"
+/>
 
 <div class="browse wrap">
 	<header class="page-head">

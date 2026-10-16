@@ -143,6 +143,22 @@ lycées / CISCO / séries / statuts / mentions en dictionnaires, moyenne × 100.
 matière restent côté serveur (le relevé de notes est rendu en SSR). `versions` donne l'empreinte
 de chaque année : la liste charge `?annee=…&v=…`, mis en cache une fois pour toutes.
 
+## Partage et référencement
+
+Chaque page passe par `src/lib/components/Seo.svelte` : titre, description, `<link rel="canonical">`,
+Open Graph (`og:title`, `og:description`, `og:image` 1200 × 630 avec dimensions et texte alternatif,
+`og:url`, `og:type`, `og:site_name`, `og:locale`) et Twitter (`summary_large_image`). Les pages de
+résultat et de relevé gardent `noindex` ; leur titre et leur description portent le nom, le statut et
+la mention.
+
+Les URL absolues partent de **`PUBLIC_SITE_URL`** (variable d'environnement lue à l'exécution,
+`https://exam-results.ohayoprepa.mg` par défaut ; l'origine locale n'est utilisée qu'en
+développement). L'image Docker la fixe avec `ENV` ; sur Cloudflare, la déclarer dans les variables
+du projet si le domaine change.
+
+Images Open Graph : `static/og/{home,liste,lycees}.png`, rendues dans le style v1 par
+`bun run og:generate` (`scripts/og.py`, Playwright pour Python et Chromium requis).
+
 ## Déploiement (Cloudflare)
 
 ```bash
@@ -155,6 +171,8 @@ Aucune variable d'environnement ni binding n'est nécessaire : les données sont
 ## Docker
 
 Image `oven/bun:1.4.2-alpine`, serveur SvelteKit autonome (`ADAPTER=node`), port 3000, utilisateur non root, healthcheck intégré.
+Pages HTML et JSON de l'API compressés (brotli / gzip) par `src/hooks.server.ts`, assets statiques pré-compressés.
+`PUBLIC_SITE_URL` (défaut : `https://exam-results.ohayoprepa.mg`) fixe l'origine des balises canoniques et Open Graph.
 
 ```bash
 docker build -t exam-result .
@@ -167,6 +185,7 @@ Sans `ADAPTER=node`, `bun run build` reste sur l'adaptateur Cloudflare.
 
 ```
 scripts/generate-data.ts          générateur de données de démo
+scripts/og.py                     images Open Graph (static/og/)
 src/lib/data/*.json               données (une année par fichier)
 src/lib/server/data.ts            chargement / recherche côté serveur
 src/lib/types.ts                  types et listes de valeurs (séries, provinces…)

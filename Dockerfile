@@ -19,6 +19,8 @@ FROM oven/bun:1.4.2-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 ENV PORT=3000
+# Origine absolue des balises canoniques et Open Graph
+ENV PUBLIC_SITE_URL=https://exam-results.ohayoprepa.mg
 
 # Install production dependencies only
 COPY package.json bun.lock ./

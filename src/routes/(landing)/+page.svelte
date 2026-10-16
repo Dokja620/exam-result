@@ -1,4 +1,5 @@
 <script lang="ts">
+	import Seo from '$lib/components/Seo.svelte';
 	import Stats from '$lib/landing/stats.svelte';
 	import Hero from '$lib/landing/hero.svelte';
 	import Icon from '$lib/components/Icon.svelte';
@@ -68,13 +69,11 @@
 	const total = $derived(data.meta.totaux[String(data.annee)] ?? 0);
 </script>
 
-<svelte:head>
-	<title>Résultats du BAC {data.annee}, Madagascar</title>
-	<meta
-		name="description"
-		content="Consultez votre résultat au Baccalauréat {data.annee} à Madagascar par numéro de candidat, ou parcourez les résultats par nom, série, province et établissement."
-	/>
-</svelte:head>
+<Seo
+	title="Résultats du BAC {data.annee}, Madagascar"
+	description="Consultez votre résultat au Baccalauréat {data.annee} à Madagascar par numéro de candidat, ou parcourez les résultats par nom, série, province et établissement."
+	path="/"
+/>
 
 <div class="home wrap">
 	<Hero
