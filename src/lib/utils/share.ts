@@ -1,18 +1,22 @@
 import type { Result } from '$lib/types';
 
+/** Chemin de la page autonome d'un résultat (SSR + balises Open Graph). */
+export function resultPath(annee: number, numero: string): string {
+	return `/resultat/${annee}/${encodeURIComponent(numero)}`;
+}
+
 export function resultUrl(annee: number, numero: string): string {
-	const url = new URL(window.location.href);
-	url.search = '';
-	url.searchParams.set('annee', String(annee));
-	url.searchParams.set('n', numero);
-	return url.toString();
+	return new URL(resultPath(annee, numero), window.location.origin).toString();
+}
+
+export function statutLabel(r: Result): string {
+	if (r.statut === 'admis') return r.mention ? `Admis, mention ${r.mention}` : 'Admis';
+	if (r.statut === '2e session') return 'Convoqué à la 2e session';
+	return 'Ajourné';
 }
 
 export function shareText(r: Result, annee: number): string {
-	const nom = `${r.nom} ${r.prenoms}`;
-	return r.statut === 'admis'
-		? `${nom} – ADMIS au BAC ${annee} (série ${r.serie}, mention ${r.mention}).`
-		: `${nom} – BAC ${annee}, série ${r.serie} : ${r.statut}.`;
+	return `${r.nom} ${r.prenoms}, BAC ${annee} série ${r.serie} : ${statutLabel(r)}.`;
 }
 
 export async function copyText(text: string): Promise<boolean> {
