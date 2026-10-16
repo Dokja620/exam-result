@@ -1,21 +1,25 @@
 import { json } from '@sveltejs/kit';
 import type { RequestHandler } from './$types';
 import {
+	compactJson,
 	defaultYear,
 	findByNumero,
 	getMeta,
-	loadDataset,
 	listYears,
-	search
+	search,
+	statsOf,
+	withoutNotes
 } from '$lib/server/data';
 
 /**
- * GET /api/results                      -> métadonnées (années disponibles, totaux)
- * GET /api/results?annee=2025           -> jeu de données complet de l'année
- * GET /api/results?annee=2025&n=123456  -> un candidat (404 si absent)
- * GET /api/results?annee=2025&search=ra -> 20 premiers résultats correspondants
+ * GET /api/results                         -> métadonnées (années, totaux, empreintes)
+ * GET /api/results?annee=2025              -> jeu de données compact de l'année (sans notes)
+ * GET /api/results?annee=2025&v=<empreinte> -> idem, URL immuable (cache 1 an)
+ * GET /api/results?annee=2025&n=123456     -> un candidat (404 si absent)
+ * GET /api/results?annee=2025&search=ra    -> 20 premiers résultats correspondants
+ * GET /api/results?annee=2025&stats        -> statistiques de la session
  */
-export const GET: RequestHandler = async ({ url, setHeaders }) => {
+export const GET: RequestHandler = async ({ url, request, setHeaders }) => {
 	const anneeParam = url.searchParams.get('annee');
 	const n = url.searchParams.get('n')?.trim();
 	const q = url.searchParams.get('search')?.trim();
@@ -34,7 +38,7 @@ export const GET: RequestHandler = async ({ url, setHeaders }) => {
 		const r = await findByNumero(annee, n);
 		if (!r) return json({ error: 'Candidat introuvable' }, { status: 404 });
 		setHeaders({ 'cache-control': 'public, max-age=3600' });
-		return json(r);
+		return json(withoutNotes(r));
 	}
 
 	if (q) {
@@ -42,7 +46,24 @@ export const GET: RequestHandler = async ({ url, setHeaders }) => {
 		return json(await search(annee, q));
 	}
 
-	const ds = await loadDataset(annee);
-	setHeaders({ 'cache-control': 'public, max-age=86400, stale-while-revalidate=604800' });
-	return json(ds);
+	if (url.searchParams.has('stats')) {
+		setHeaders({ 'cache-control': 'public, max-age=3600' });
+		return json(await statsOf(annee));
+	}
+
+	const c = await compactJson(annee);
+	if (!c) return json({ error: 'Jeu de données indisponible' }, { status: 404 });
+	const etag = `"${c.version}"`;
+	const headers: Record<string, string> = {
+		'content-type': 'application/json',
+		etag,
+		'cache-control':
+			url.searchParams.get('v') === c.version
+				? 'public, max-age=31536000, immutable'
+				: 'public, max-age=3600, stale-while-revalidate=86400'
+	};
+	if (request.headers.get('if-none-match') === etag) {
+		return new Response(null, { status: 304, headers });
+	}
+	return new Response(c.body, { headers });
 };

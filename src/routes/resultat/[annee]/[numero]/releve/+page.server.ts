@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { findByNumero, listYears, loadDataset, notesOf } from '$lib/server/data';
+import { findByNumero, listYears, loadDataset, notesOf, withoutNotes } from '$lib/server/data';
 
 export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const annee = Number(params.annee);
@@ -11,5 +11,5 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	if (!notes.length) error(404, { message: 'Relevé de notes indisponible' });
 	const ds = await loadDataset(annee);
 	setHeaders({ 'cache-control': 'public, max-age=3600' });
-	return { annee, session: ds?.session ?? `Session ${annee}`, result, notes };
+	return { annee, session: ds?.session ?? `Session ${annee}`, result: withoutNotes(result), notes };
 };

@@ -10,7 +10,7 @@
 
 	const ds = new YearData();
 	$effect(() => {
-		if (browser) ds.load(data.annee);
+		if (browser) ds.load(data.annee, data.meta.versions?.[String(data.annee)]);
 	});
 
 	let selected = $state<Result | null>(data.candidat);
@@ -70,7 +70,7 @@
 		initialFilters={data.filters}
 		autofocus={data.focus}
 		onSelect={select}
-		onRetry={() => ds.load(data.annee)}
+		onRetry={() => ds.load(data.annee, data.meta.versions?.[String(data.annee)])}
 	/>
 </div>
 

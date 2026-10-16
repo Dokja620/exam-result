@@ -14,7 +14,7 @@ import { build, files, version } from '$service-worker';
 const sw = self as unknown as ServiceWorkerGlobalScope;
 
 const ASSETS_CACHE = `assets-${version}`;
-const DATA_CACHE = 'results-data-v1';
+const DATA_CACHE = 'results-data-v2';
 const PAGES_CACHE = 'pages-v1';
 const ASSETS = [...build, ...files];
 
@@ -37,7 +37,11 @@ sw.addEventListener('activate', (event) => {
 			.then((keys) =>
 				Promise.all(
 					keys
-						.filter((k) => k.startsWith('assets-') && k !== ASSETS_CACHE)
+						.filter(
+							(k) =>
+								(k.startsWith('assets-') && k !== ASSETS_CACHE) ||
+								(k.startsWith('results-data-') && k !== DATA_CACHE)
+						)
 						.map((k) => caches.delete(k))
 				)
 			)
@@ -66,6 +70,28 @@ async function staleWhileRevalidate(request: Request, cacheName: string): Promis
 	});
 }
 
+/**
+ * Jeu de données d'une année à URL immuable (`?annee=…&v=<empreinte>`) : le cache d'abord ;
+ * à la mise en cache d'une nouvelle empreinte, les anciennes de la même année sont retirées.
+ */
+async function cacheFirst(request: Request, cacheName: string): Promise<Response> {
+	const cache = await caches.open(cacheName);
+	const cached = await cache.match(request);
+	if (cached) return cached;
+	const res = await fetch(request);
+	if (res.ok) {
+		const url = new URL(request.url);
+		const annee = url.searchParams.get('annee');
+		for (const old of await cache.keys()) {
+			const u = new URL(old.url);
+			if (u.searchParams.get('annee') === annee && u.searchParams.has('v') && u.href !== url.href)
+				await cache.delete(old);
+		}
+		await cache.put(request, res.clone());
+	}
+	return res;
+}
+
 async function networkFirst(request: Request, cacheName: string): Promise<Response> {
 	const cache = await caches.open(cacheName);
 	try {
@@ -91,6 +117,10 @@ sw.addEventListener('fetch', (event) => {
 	}
 
 	// Données de résultats (métadonnées + année + candidat)
+	if (url.pathname === '/api/results' && url.searchParams.has('v')) {
+		event.respondWith(cacheFirst(request, DATA_CACHE));
+		return;
+	}
 	if (url.pathname === '/api/results') {
 		event.respondWith(staleWhileRevalidate(request, DATA_CACHE));
 		return;

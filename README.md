@@ -129,12 +129,19 @@ ci-dessus et le déposer dans `src/lib/data/`.
 
 ### API
 
-| Requête                                   | Réponse                                |
-| ----------------------------------------- | -------------------------------------- |
-| `GET /api/results`                        | `{ annees, annee, totaux, examples }`  |
-| `GET /api/results?annee=2025`             | le jeu de données complet (cache 24 h) |
-| `GET /api/results?annee=2025&n=123456`    | un candidat, `404` sinon               |
-| `GET /api/results?annee=2025&search=rako` | 20 premiers résultats correspondants   |
+| Requête                                   | Réponse                                         |
+| ----------------------------------------- | ----------------------------------------------- |
+| `GET /api/results`                        | `{ annees, annee, totaux, examples, versions }` |
+| `GET /api/results?annee=2025`             | jeu de données compact, sans notes (ETag, 1 h)  |
+| `GET /api/results?annee=2025&v=<version>` | idem, URL immuable (cache 1 an)                 |
+| `GET /api/results?annee=2025&n=123456`    | un candidat (sans notes), `404` sinon           |
+| `GET /api/results?annee=2025&search=rako` | 20 premiers résultats correspondants            |
+| `GET /api/results?annee=2025&stats`       | statistiques de la session (accueil)            |
+
+Le format compact (`src/lib/compact.ts`) est orienté colonnes : numéros en écarts successifs,
+lycées / CISCO / séries / statuts / mentions en dictionnaires, moyenne × 100. Les notes par
+matière restent côté serveur (le relevé de notes est rendu en SSR). `versions` donne l'empreinte
+de chaque année : la liste charge `?annee=…&v=…`, mis en cache une fois pour toutes.
 
 ## Déploiement (Cloudflare)
 

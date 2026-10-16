@@ -1,6 +1,6 @@
 import { error } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { listYears, loadDataset } from '$lib/server/data';
+import { listYears, loadDataset, withoutNotes } from '$lib/server/data';
 import { statsParEcole } from '$lib/stats';
 
 export const load: PageServerLoad = async ({ params, url, setHeaders }) => {
@@ -15,6 +15,7 @@ export const load: PageServerLoad = async ({ params, url, setHeaders }) => {
 		? ds.results
 				.filter((r) => r.ecole === ecole && r.statut === 'admis')
 				.sort((a, b) => b.moyenne - a.moyenne)
+				.map(withoutNotes)
 		: [];
 
 	setHeaders({ 'cache-control': 'public, max-age=3600' });

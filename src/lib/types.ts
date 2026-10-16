@@ -34,7 +34,7 @@ export interface Result {
 	/** Moyenne générale /20 */
 	moyenne: number;
 	/** Notes /20 dans l'ordre de `Dataset.matieres[serie]` (moyenne pondérée = `moyenne`) */
-	notes: number[];
+	notes?: number[];
 }
 
 /** `[matière, coefficient]` */
@@ -73,4 +73,6 @@ export interface Meta {
 	totaux: Record<string, number>;
 	/** Numéros de test par année */
 	examples: Record<string, Examples>;
+	/** Empreinte du jeu de données compact de chaque année (URL immuable `&v=`) */
+	versions: Record<string, string>;
 }
