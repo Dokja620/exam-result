@@ -1,0 +1,140 @@
+@use './tokens' as *;
+
+.hero {
+	background: var(--mint);
+	color: var(--teal);
+	padding: 2.5rem 0 3rem;
+
+	@include up($bp-md) {
+		padding: 4rem 0 4.5rem;
+	}
+
+	.wrap {
+		display: grid;
+		gap: 1.5rem;
+		justify-items: center;
+		text-align: center;
+	}
+
+	.kicker {
+		font-weight: 700;
+		font-size: 0.9375rem;
+		opacity: 0.85;
+	}
+
+	h1 {
+		max-width: 22ch;
+		color: var(--teal);
+	}
+
+	.lede {
+		font-size: 1.0625rem;
+		max-width: 38ch;
+		opacity: 0.9;
+	}
+}
+
+// Le bordereau : un formulaire blanc posé sur la bande mint
+.slip {
+	width: 100%;
+	max-width: 34rem;
+	background: var(--paper);
+	border-radius: var(--r-lg);
+	padding: 1.25rem;
+	box-shadow: var(--shadow-card);
+	display: grid;
+	gap: 0.875rem;
+	text-align: left;
+	color: var(--ink);
+	box-sizing: border-box;
+
+	.row {
+		display: grid;
+		gap: 0.75rem;
+
+		@include up($bp-sm) {
+			grid-template-columns: auto 1fr;
+		}
+	}
+
+	.field {
+		display: grid;
+		gap: 0.3rem;
+
+		> span {
+			font-size: 0.8125rem;
+			font-weight: 700;
+			color: var(--ink-2);
+		}
+	}
+
+	// Sélecteur d'année : pilule
+	select {
+		height: 3.5rem;
+		min-width: 7.5rem;
+		border: 1px solid var(--line-strong);
+		border-radius: var(--r-md);
+		background-color: var(--color-base-100);
+		font-weight: 700;
+		font-size: 1rem;
+		padding-inline: 0.9rem 2.2rem;
+		color: var(--ink);
+	}
+
+	// Numéro de candidat : grand champ à 6 chiffres, espacés comme un code
+	.numero {
+		height: 3.5rem;
+		width: 100%;
+		border: 1px solid var(--line-strong);
+		border-radius: var(--r-md);
+		background: var(--color-base-100);
+		font-size: 1.75rem;
+		font-weight: 900;
+		letter-spacing: 0.18em;
+		font-variant-numeric: tabular-nums;
+		padding-inline: 1rem;
+		color: var(--ink);
+		box-sizing: border-box;
+
+		&::placeholder {
+			color: var(--ink-3);
+			font-weight: 400;
+			letter-spacing: 0.18em;
+		}
+		&:focus {
+			outline: none;
+			border-color: var(--teal);
+			box-shadow: var(--focus);
+		}
+		&[aria-invalid='true'] {
+			border-color: var(--color-error);
+		}
+	}
+
+	.submit {
+		height: 3.25rem;
+		font-size: 1.0625rem;
+		border-radius: var(--r-md);
+	}
+
+	.hint {
+		font-size: 0.875rem;
+		color: var(--ink-2);
+	}
+
+	.error {
+		display: flex;
+		gap: 0.5rem;
+		align-items: flex-start;
+		font-size: 0.9375rem;
+		color: var(--color-error-content);
+		background: color-mix(in oklab, var(--color-error) 12%, var(--paper));
+		border-radius: var(--r-sm);
+		padding: 0.6rem 0.8rem;
+
+		.icon {
+			flex: none;
+			margin-top: 0.1rem;
+		}
+	}
+}

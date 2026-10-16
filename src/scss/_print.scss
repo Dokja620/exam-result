@@ -1,0 +1,88 @@
+// Impression : « Exporter en PDF » (liste) et « Imprimer » (relevé)
+@media print {
+	.site-header,
+	.site-footer,
+	.hero,
+	.stats,
+	.filterbar,
+	.list-actions,
+	.pagination,
+	.result-page .back,
+	.result-page .autre,
+	.releve .actions,
+	.releve .feedback,
+	.result-modal .close,
+	.modal-backdrop,
+	.result-cards {
+		display: none !important;
+	}
+
+	body {
+		background: #fff;
+	}
+
+	.results-table {
+		display: table !important;
+		font-size: 9.5pt;
+		border: 0;
+		box-shadow: none;
+
+		th,
+		td {
+			padding: 3pt 5pt;
+		}
+		th {
+			background: #eee !important;
+			color: #000 !important;
+			-webkit-print-color-adjust: exact;
+			print-color-adjust: exact;
+		}
+		tr {
+			break-inside: avoid;
+		}
+		td.go {
+			display: none;
+		}
+		.lg {
+			display: table-cell;
+		}
+	}
+
+	.print-title {
+		display: block !important;
+		font-size: 14pt;
+		font-weight: 900;
+		margin: 0 0 8pt;
+	}
+
+	// Si un relevé est ouvert en modale, on n'imprime que lui
+	body:has(.result-modal[open]) #layout {
+		display: none !important;
+	}
+
+	.result-modal[open] {
+		position: static;
+		display: block;
+		max-width: none;
+		max-height: none;
+		background: none;
+
+		.modal-box {
+			max-width: 100%;
+			width: 100%;
+			transform: none;
+		}
+	}
+
+	.releve {
+		box-shadow: none;
+		border: 1pt solid #999;
+		max-width: 100%;
+		-webkit-print-color-adjust: exact;
+		print-color-adjust: exact;
+	}
+}
+
+.print-title {
+	display: none;
+}

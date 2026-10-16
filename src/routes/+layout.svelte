@@ -10,10 +10,10 @@
 	let { children } = $props();
 </script>
 
-<section id="layout">
+<div id="layout">
 	<Header />
 	<main>
 		{@render children()}
 	</main>
 	<Footer />
-</section>
+</div>

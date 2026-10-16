@@ -1,0 +1,108 @@
+@use './tokens' as *;
+
+#layout {
+	display: flex;
+	flex-direction: column;
+	min-height: 100dvh;
+}
+
+main {
+	flex: 1;
+}
+
+.site-header {
+	border-bottom: 1px solid var(--line);
+	background: var(--color-base-100);
+
+	.wrap {
+		display: flex;
+		align-items: center;
+		gap: 1rem;
+		min-height: 3.5rem;
+	}
+
+	.brand {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.6rem;
+		font-weight: 900;
+		color: var(--ink);
+		text-decoration: none;
+		letter-spacing: -0.01em;
+
+		img {
+			width: 1.6rem;
+			height: auto;
+			border-radius: 2px;
+		}
+		small {
+			display: block;
+			font-size: 0.75rem;
+			font-weight: 400;
+			color: var(--ink-2);
+			line-height: 1.1;
+		}
+	}
+
+	nav {
+		margin-left: auto;
+		display: flex;
+		gap: 0.25rem;
+
+		a {
+			display: inline-flex;
+			align-items: center;
+			gap: 0.35rem;
+			padding: 0.45rem 0.7rem;
+			border-radius: var(--r-sm);
+			font-weight: 700;
+			font-size: 0.9375rem;
+			color: var(--teal);
+			text-decoration: none;
+
+			&:hover,
+			&[aria-current='page'] {
+				background: var(--mint-soft);
+			}
+		}
+	}
+}
+
+.site-footer {
+	border-top: 1px solid var(--line);
+	margin-top: 4rem;
+	padding: 2rem 0;
+	font-size: 0.875rem;
+	color: var(--ink-2);
+
+	.wrap {
+		display: grid;
+		gap: 1rem;
+		align-items: center;
+
+		@include up($bp-md) {
+			grid-template-columns: auto 1fr auto;
+		}
+	}
+
+	img {
+		width: 7.5rem;
+		height: auto;
+	}
+
+	.demo {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.5rem;
+		padding: 0.3rem 0.7rem;
+		border-radius: 999px;
+		background: color-mix(in oklab, var(--color-secondary) 55%, var(--paper));
+		color: var(--color-secondary-content);
+		font-weight: 700;
+		width: fit-content;
+	}
+
+	a {
+		color: inherit;
+	}
+}

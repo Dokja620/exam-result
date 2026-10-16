@@ -1,0 +1,287 @@
+@use './tokens' as *;
+
+// Le relevé : une feuille blanche, un bandeau de statut, puis le nom et les détails.
+.releve {
+	--band-bg: var(--color-base-200);
+	--band-fg: var(--ink);
+	--band-rule: var(--line-strong);
+
+	background: var(--paper);
+	color: var(--ink);
+	border-radius: var(--r-lg);
+	border: 1px solid var(--line);
+	box-shadow: var(--shadow-card);
+	overflow: hidden;
+	width: 100%;
+	max-width: 36rem;
+	margin-inline: auto;
+	box-sizing: border-box;
+
+	&[data-statut='admis'] {
+		--band-bg: var(--mint);
+		--band-fg: var(--teal);
+		--band-rule: color-mix(in oklab, var(--teal) 30%, var(--mint));
+	}
+	&[data-statut='2e session'] {
+		--band-bg: color-mix(in oklab, var(--color-warning) 26%, var(--paper));
+		--band-fg: var(--color-warning-content);
+		--band-rule: color-mix(in oklab, var(--color-warning) 60%, var(--paper));
+	}
+
+	// En-tête institutionnel
+	.officiel {
+		display: flex;
+		flex-wrap: wrap;
+		align-items: center;
+		gap: 0.75rem;
+		padding: 0.9rem 1.25rem;
+		font-size: 0.8125rem;
+		color: var(--ink-2);
+		border-bottom: 1px solid var(--line);
+
+		img {
+			width: 1.75rem;
+			height: auto;
+			border-radius: 2px;
+			flex: none;
+		}
+		b {
+			display: block;
+			color: var(--ink);
+			font-weight: 700;
+		}
+		.session {
+			margin-left: auto;
+			text-align: right;
+			white-space: nowrap;
+			font-variant-numeric: tabular-nums;
+		}
+	}
+
+	// Bandeau : le verdict
+	.band {
+		background: var(--band-bg);
+		color: var(--band-fg);
+		padding: 1.5rem 1.25rem;
+		display: grid;
+		gap: 0.2rem;
+		border-bottom: 1px solid var(--band-rule);
+
+		.statut {
+			font-size: clamp(2.25rem, 1.5rem + 3vw, 3rem);
+			font-weight: 900;
+			line-height: 1;
+			letter-spacing: -0.02em;
+		}
+		.sous {
+			font-size: 1.0625rem;
+			font-weight: 700;
+			opacity: 0.9;
+		}
+	}
+
+	// Corps
+	.corps {
+		padding: 1.5rem 1.25rem;
+		display: grid;
+		gap: 1.25rem;
+	}
+
+	.identite {
+		.nom {
+			font-size: 1.5rem;
+			font-weight: 900;
+			line-height: 1.15;
+			letter-spacing: -0.01em;
+		}
+		.prenoms {
+			font-size: 1.25rem;
+			line-height: 1.25;
+		}
+	}
+
+	// Moyenne + série : la deuxième ligne de lecture
+	.score {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		border: 1px solid var(--line);
+		border-radius: var(--r-md);
+		overflow: hidden;
+
+		> div {
+			padding: 0.75rem 1rem;
+			display: grid;
+			gap: 0.1rem;
+
+			&:first-child {
+				border-right: 1px solid var(--line);
+			}
+		}
+		dt {
+			font-size: 0.8125rem;
+			color: var(--ink-2);
+		}
+		dd {
+			margin: 0;
+			font-size: 1.5rem;
+			font-weight: 900;
+			font-variant-numeric: tabular-nums;
+			line-height: 1.1;
+
+			small {
+				font-size: 0.9375rem;
+				font-weight: 400;
+				color: var(--ink-2);
+			}
+		}
+	}
+
+	.details {
+		display: grid;
+		gap: 0.6rem;
+		margin: 0;
+
+		> div {
+			display: grid;
+			grid-template-columns: 7rem 1fr;
+			gap: 0.5rem;
+			font-size: 0.9375rem;
+			padding-bottom: 0.6rem;
+			border-bottom: 1px solid var(--line);
+
+			&:last-child {
+				border-bottom: 0;
+				padding-bottom: 0;
+			}
+		}
+		dt {
+			color: var(--ink-2);
+		}
+		dd {
+			margin: 0;
+			font-weight: 700;
+			font-variant-numeric: tabular-nums;
+		}
+	}
+
+	.mot {
+		font-size: 0.9375rem;
+		color: var(--ink-2);
+		line-height: 1.55;
+		max-width: 52ch;
+	}
+
+	.actions {
+		display: grid;
+		gap: 0.5rem;
+		grid-template-columns: 1fr 1fr;
+		padding: 0 1.25rem 1.25rem;
+
+		@include up($bp-sm) {
+			grid-template-columns: repeat(3, 1fr);
+		}
+
+		.btn {
+			height: 2.75rem;
+			min-height: 0;
+			border-radius: var(--r-sm);
+			font-size: 0.9rem;
+			padding-inline: 0.5rem;
+
+			&:first-child {
+				grid-column: 1 / -1;
+				@include up($bp-sm) {
+					grid-column: auto;
+				}
+			}
+		}
+	}
+
+	.feedback {
+		min-height: 1.25rem;
+		padding: 0 1.25rem 0.9rem;
+		font-size: 0.875rem;
+		text-align: center;
+		color: var(--color-success-content);
+	}
+}
+
+// Apparition du relevé : un seul mouvement, à l'ouverture
+@media (prefers-reduced-motion: no-preference) {
+	.releve.enter {
+		animation: releve-in 0.35s cubic-bezier(0.2, 0.7, 0.2, 1);
+	}
+	@keyframes releve-in {
+		from {
+			opacity: 0;
+			transform: translateY(12px);
+		}
+	}
+}
+
+// Modale (daisyUI .modal) : la feuille remplit la boîte
+.result-modal {
+	.modal-box {
+		padding: 0;
+		background: transparent;
+		box-shadow: none;
+		max-width: 36rem;
+		width: calc(100% - 1.5rem);
+		overflow: visible;
+	}
+
+	.close {
+		position: absolute;
+		top: 0.5rem;
+		right: 0.5rem;
+		z-index: 2;
+		width: 2.25rem;
+		height: 2.25rem;
+		border-radius: 50%;
+		border: 0;
+		background: var(--paper);
+		color: var(--ink);
+		display: grid;
+		place-items: center;
+		cursor: pointer;
+		box-shadow: 0 1px 3px oklch(0% 0 0 / 0.15);
+
+		&:hover {
+			background: var(--color-base-200);
+		}
+	}
+
+	.modal-backdrop {
+		background: oklch(20% 0.02 200 / 0.55);
+	}
+
+	// Place pour le bouton de fermeture
+	.officiel {
+		padding-right: 3.25rem;
+	}
+}
+
+// Page autonome
+.result-page {
+	padding-block: 2rem 1rem;
+
+	.back {
+		display: inline-flex;
+		align-items: center;
+		gap: 0.35rem;
+		margin-bottom: 1.25rem;
+		font-weight: 700;
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	.autre {
+		margin-top: 2rem;
+		text-align: center;
+		color: var(--ink-2);
+		font-size: 0.9375rem;
+	}
+}

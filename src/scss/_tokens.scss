@@ -1,0 +1,39 @@
+// Jetons de design. La palette reste celle du thème daisyUI « exam » (src/app.css) :
+// on la consomme via var(--color-*), on n'en redéfinit aucune.
+$bp-sm: 480px;
+$bp-md: 768px;
+$bp-lg: 1024px;
+
+@mixin up($bp) {
+	@media (min-width: $bp) {
+		@content;
+	}
+}
+
+:root {
+	// Encre : texte sur mint = primary-content (teal foncé, AA sur mint et sur blanc).
+	--ink: var(--color-base-content);
+	--ink-2: color-mix(in oklab, var(--color-base-content) 64%, var(--color-base-100));
+	--ink-3: color-mix(in oklab, var(--color-base-content) 42%, var(--color-base-100));
+	--teal: var(--color-primary-content);
+	--mint: var(--color-primary);
+	--mint-soft: color-mix(in oklab, var(--color-primary) 32%, var(--color-base-100));
+	--paper: oklch(100% 0 0);
+	--line: color-mix(in oklab, var(--color-base-content) 12%, var(--color-base-100));
+	--line-strong: color-mix(in oklab, var(--color-base-content) 24%, var(--color-base-100));
+
+	--r-sm: 0.5rem;
+	--r-md: 0.875rem;
+	--r-lg: 1.25rem;
+
+	--gutter: 1rem;
+	--wrap: 68rem;
+	--wrap-narrow: 40rem;
+
+	--focus: 0 0 0 3px color-mix(in oklab, var(--teal) 35%, transparent);
+	--shadow-card: 0 1px 2px oklch(0% 0 0 / 0.04), 0 12px 32px -12px oklch(30% 0.04 190 / 0.25);
+
+	@include up($bp-md) {
+		--gutter: 1.5rem;
+	}
+}

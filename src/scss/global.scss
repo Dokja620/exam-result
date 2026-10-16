@@ -1,38 +1,9 @@
-// importing ScreenShift
-@use 'screenshift/scss';
-
-// importing shared style | Typos, Var and Mixins
-@use './shared';
-
-// Layout styles | Header and Footer
+@use './tokens';
+@use './base';
 @use './layout';
-
-// Landing page style
-@use './landing';
-
-body {
-  max-width: 100vw;
-  font-family: 'Lato', sans-serif;
-}
-
-main {
-  margin: shared.$spacing-xl 0;
-  display: grid;
-  gap: shared.$spacing-lg;
-}
-
-#layout {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-
-  footer {
-    margin-top: auto;
-  }
-}
-
-iconify-icon {
-  display: inline-block;
-  width: 1em;
-  height: 1em;
-}
+@use './hero';
+@use './stats';
+@use './list';
+@use './result';
+@use './etablissements';
+@use './print';
