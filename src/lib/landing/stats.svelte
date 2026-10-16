@@ -1,98 +1,91 @@
 <script lang="ts">
-	import 'iconify-icon';
-	import { computeStats } from '$lib/stats';
+	import Icon from '$lib/components/Icon.svelte';
+	import { computeStats, fmtInt, fmtPct } from '$lib/stats';
 	import type { Result } from '$lib/types';
 
 	let { rows, annee }: { rows: Result[]; annee: number } = $props();
 
 	const stats = $derived(computeStats(rows));
-	const fmt = (n: number) => n.toLocaleString('fr-FR', { maximumFractionDigits: 1 });
-	let open = $state(false);
 </script>
 
-{#if rows.length}
-	<section id="stats" data-screenshift aria-labelledby="stats-title">
-		<div class="summary">
-			<div class="kpi" style="--pct: {stats.global.taux}%">
-				<span class="value">{fmt(stats.global.taux)} %</span>
-				<span class="kpi-label">Taux de réussite {annee}</span>
+<section class="stats wrap" aria-labelledby="stats-title">
+	<h2 id="stats-title" class="sr-only">Statistiques du BAC {annee}</h2>
+	<div class="strip">
+		<div class="figures">
+			<div class="taux">
+				<span class="value">{fmtPct(stats.global.taux)}</span>
+				<span class="label">Taux de réussite</span>
+				<span class="gauge" aria-hidden="true"
+					><span style="width: {stats.global.taux}%"></span></span
+				>
 			</div>
-			<div class="kpi">
-				<span class="value">{stats.global.admis.toLocaleString('fr-FR')}</span>
-				<span class="kpi-label">Admis sur {stats.global.total.toLocaleString('fr-FR')}</span>
+			<div>
+				<span class="value">{fmtInt(stats.global.admis)}</span>
+				<span class="label">Admis sur {fmtInt(stats.global.total)}</span>
 			</div>
-			<div class="kpi">
-				<span class="value">{stats.deuxieme.toLocaleString('fr-FR')}</span>
-				<span class="kpi-label">2e session</span>
+			<div>
+				<span class="value">{fmtInt(stats.deuxieme)}</span>
+				<span class="label">Convoqués en 2e session</span>
 			</div>
-			<div class="kpi">
-				<span class="value">{stats.ajournes.toLocaleString('fr-FR')}</span>
-				<span class="kpi-label">Ajournés</span>
+			<div>
+				<span class="value">{fmtInt(stats.ajournes)}</span>
+				<span class="label">Ajournés</span>
 			</div>
 		</div>
 
-		<button
-			class="btn btn-ghost btn-sm stats-toggle"
-			aria-expanded={open}
-			aria-controls="stats-details"
-			onclick={() => (open = !open)}
-		>
-			<iconify-icon icon={open ? 'tabler:chevron-up' : 'tabler:chart-bar'}></iconify-icon>
-			{open ? 'Masquer les statistiques' : 'Statistiques détaillées'}
-		</button>
-
-		{#if open}
-			<div id="stats-details" class="details">
-				<h5 id="stats-title">Statistiques du BAC {annee}</h5>
-				<div class="grid">
-					<div class="block">
-						<h6>Taux de réussite par série</h6>
-						<ul>
-							{#each stats.parSerie as s (s.label)}
-								<li>
-									<span class="name">{s.label}</span>
-									<span
-										class="bar"
-										role="img"
-										aria-label="{fmt(s.taux)} % d'admis en série {s.label}"
-									>
-										<span style="width: {s.taux}%"></span>
-									</span>
-									<span class="num">{fmt(s.taux)} % <small>({s.admis}/{s.total})</small></span>
-								</li>
-							{/each}
-						</ul>
-					</div>
-					<div class="block">
-						<h6>Taux de réussite par province</h6>
-						<ul>
-							{#each stats.parProvince as p (p.label)}
-								<li>
-									<span class="name">{p.label}</span>
-									<span class="bar" role="img" aria-label="{fmt(p.taux)} % d'admis à {p.label}">
-										<span style="width: {p.taux}%"></span>
-									</span>
-									<span class="num">{fmt(p.taux)} % <small>({p.admis}/{p.total})</small></span>
-								</li>
-							{/each}
-						</ul>
-					</div>
-					<div class="block">
-						<h6>Mentions (parmi les admis)</h6>
-						<ul>
-							{#each stats.mentions as m (m.label)}
-								<li data-mention={m.label}>
-									<span class="name">{m.label}</span>
-									<span class="bar" role="img" aria-label="{fmt(m.part)} % de mention {m.label}">
-										<span style="width: {m.part}%"></span>
-									</span>
-									<span class="num">{fmt(m.part)} % <small>({m.total})</small></span>
-								</li>
-							{/each}
-						</ul>
-					</div>
+		<details>
+			<summary>
+				Détail par série, province et mention
+				<Icon name="chevron-down" size={18} />
+			</summary>
+			<div class="details-body">
+				<div class="block">
+					<h3>Réussite par série</h3>
+					<ul>
+						{#each stats.parSerie as s (s.label)}
+							<li>
+								<span class="name">Série {s.label}</span>
+								<span
+									class="bar"
+									role="img"
+									aria-label="{fmtPct(s.taux)} d'admis en série {s.label}"
+								>
+									<span style="width: {s.taux}%"></span>
+								</span>
+								<span class="pct">{fmtPct(s.taux)}<small>{s.admis}/{s.total}</small></span>
+							</li>
+						{/each}
+					</ul>
+				</div>
+				<div class="block">
+					<h3>Réussite par province</h3>
+					<ul>
+						{#each stats.parProvince as p (p.label)}
+							<li>
+								<span class="name">{p.label}</span>
+								<span class="bar" role="img" aria-label="{fmtPct(p.taux)} d'admis à {p.label}">
+									<span style="width: {p.taux}%"></span>
+								</span>
+								<span class="pct">{fmtPct(p.taux)}<small>{p.admis}/{p.total}</small></span>
+							</li>
+						{/each}
+					</ul>
+				</div>
+				<div class="block">
+					<h3>Mentions parmi les admis</h3>
+					<ul>
+						{#each stats.mentions as m (m.label)}
+							<li data-mention={m.label}>
+								<span class="name">{m.label}</span>
+								<span class="bar" role="img" aria-label="{fmtPct(m.part)} de mention {m.label}">
+									<span style="width: {m.part}%"></span>
+								</span>
+								<span class="pct">{fmtPct(m.part)}<small>{m.total}</small></span>
+							</li>
+						{/each}
+					</ul>
 				</div>
 			</div>
-		{/if}
-	</section>
-{/if}
+		</details>
+	</div>
+</section>

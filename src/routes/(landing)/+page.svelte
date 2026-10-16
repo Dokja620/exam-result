@@ -1,10 +1,11 @@
 <script lang="ts">
 	import Table from '$lib/landing/table.svelte';
 	import Stats from '$lib/landing/stats.svelte';
-	import QuickCheck from '$lib/landing/quickCheck.svelte';
+	import Hero from '$lib/landing/hero.svelte';
 	import Modal from '$lib/components/table/Modal.svelte';
 	import { goto, replaceState } from '$app/navigation';
 	import { browser } from '$app/environment';
+	import { resultPath } from '$lib/utils/share';
 	import type { Dataset, Result } from '$lib/types';
 
 	let { data } = $props();
@@ -12,13 +13,14 @@
 	// ---- Jeu de données de l'année courante (chargé côté client, mis en cache) ----
 	const cache = new Map<number, Result[]>();
 	let rows = $state<Result[]>([]);
-	let loading = $state(false);
+	let loading = $state(true);
 	let loadError = $state('');
 
 	async function loadYear(annee: number) {
 		const hit = cache.get(annee);
 		if (hit) {
 			rows = hit;
+			loading = false;
 			return;
 		}
 		loading = true;
@@ -39,7 +41,7 @@
 			cache.set(annee, ds.results);
 			rows = ds.results;
 		} catch (e) {
-			loadError = `Impossible de charger les résultats ${annee}. Vérifiez votre connexion puis réessayez.`;
+			loadError = 'Vérifiez votre connexion puis réessayez.';
 			console.error(e);
 		} finally {
 			loading = false;
@@ -50,12 +52,11 @@
 		if (browser) loadYear(data.annee);
 	});
 
-	// ---- Candidat sélectionné (modal) + URL partageable ?n= ----
+	// ---- Candidat sélectionné (modale) + URL partageable ?n= ----
 	let selected = $state<Result | null>(data.candidat);
 	let notFound = $state('');
 
 	$effect(() => {
-		// Ouverture directe via lien partagé
 		selected = data.candidat;
 		notFound = data.introuvable ? data.numero : '';
 	});
@@ -82,6 +83,11 @@
 	function checkNumero(numero: string) {
 		const n = numero.trim();
 		if (!n) return;
+		if (!rows.length) {
+			// Données pas encore là : la page autonome répond côté serveur
+			goto(resultPath(data.annee, n));
+			return;
+		}
 		const r = rows.find((x) => x.numero === n);
 		if (r) select(r);
 		else notFound = n;
@@ -96,34 +102,33 @@
 </script>
 
 <svelte:head>
-	<title>Résultats du BAC {data.annee} – Madagascar</title>
+	<title>Résultats du BAC {data.annee}, Madagascar</title>
 	<meta
 		name="description"
-		content="Consultez les résultats du Baccalauréat {data.annee} à Madagascar : recherche par numéro de candidat ou par nom, statistiques par série et par province."
+		content="Consultez votre résultat au Baccalauréat {data.annee} à Madagascar par numéro de candidat, ou parcourez les résultats par nom, série, province et établissement."
 	/>
 </svelte:head>
 
-<div id="title" data-screenshift>
-	<h4>Résultat du Baccalauréat - Madagascar - {data.annee}</h4>
-	<QuickCheck
-		annees={data.meta.annees}
-		annee={data.annee}
-		{loading}
-		{notFound}
-		onCheck={checkNumero}
-		onYearChange={changeYear}
-	/>
-</div>
+<Hero
+	annees={data.meta.annees}
+	annee={data.annee}
+	{loading}
+	{notFound}
+	onCheck={checkNumero}
+	onYearChange={changeYear}
+/>
 
-{#if loadError}
-	<div class="alert alert-error" role="alert" data-screenshift>
-		<p>{loadError}</p>
-		<button class="btn btn-sm" onclick={() => loadYear(data.annee)}>Réessayer</button>
-	</div>
+{#if rows.length}
+	<Stats {rows} annee={data.annee} />
 {/if}
 
-<Stats {rows} annee={data.annee} />
-
-<Table {rows} {loading} annee={data.annee} onSelect={select} />
+<Table
+	{rows}
+	{loading}
+	error={loadError}
+	annee={data.annee}
+	onSelect={select}
+	onRetry={() => loadYear(data.annee)}
+/>
 
 <Modal {selected} annee={data.annee} onClose={closeModal} />

@@ -35,3 +35,29 @@ export function computeStats(rows: Result[]) {
 	const ajournes = rows.filter((r) => r.statut === 'ajourné').length;
 	return { global, parSerie, parProvince, mentions, deuxieme, ajournes };
 }
+
+export interface EcoleRate extends Rate {
+	cisco: string;
+	province: string;
+}
+
+/** Taux de réussite par établissement, trié par nom. */
+export function statsParEcole(rows: Result[]): EcoleRate[] {
+	const groups = new Map<string, Result[]>();
+	for (const r of rows) {
+		const g = groups.get(r.ecole);
+		if (g) g.push(r);
+		else groups.set(r.ecole, [r]);
+	}
+	return [...groups.entries()]
+		.map(([ecole, list]) => ({
+			...rate(ecole, list),
+			cisco: list[0].cisco,
+			province: list[0].province
+		}))
+		.sort((a, b) => a.label.localeCompare(b.label, 'fr'));
+}
+
+/** Format fr-FR, 1 décimale max. */
+export const fmtPct = (n: number) => n.toLocaleString('fr-FR', { maximumFractionDigits: 1 }) + ' %';
+export const fmtInt = (n: number) => n.toLocaleString('fr-FR');
