@@ -47,8 +47,24 @@
 			break-inside: avoid;
 		}
 		.lg,
-		.md {
+		.md,
+		.c-lycee,
+		.c-mention {
 			display: table-cell;
+		}
+		th,
+		td {
+			height: auto;
+			white-space: normal;
+		}
+		thead th {
+			position: static;
+		}
+		.sub {
+			display: none;
+		}
+		.c-lycee {
+			width: 9rem;
 		}
 	}
 

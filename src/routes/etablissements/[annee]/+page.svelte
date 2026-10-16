@@ -9,6 +9,8 @@
 	const moy = (n: number) =>
 		n.toLocaleString('fr-FR', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
 
+	const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+
 	function pick(e: Event) {
 		const v = (e.currentTarget as HTMLSelectElement).value;
 		goto(
@@ -78,14 +80,14 @@
 			<h2>Les admis</h2>
 			{#if data.admis.length}
 				<div class="table-scroll">
-					<table class="results-table">
+					<table class="results-table etab-table">
 						<thead>
 							<tr>
-								<th scope="col" class="md">Numéro</th>
-								<th scope="col">Candidat</th>
-								<th scope="col" class="md">Série</th>
-								<th scope="col">Mention</th>
-								<th scope="col" class="moy">Moyenne</th>
+								<th scope="col" class="c-num">Numéro</th>
+								<th scope="col" class="c-name">Candidat</th>
+								<th scope="col" class="c-serie">Série</th>
+								<th scope="col" class="c-mention">Mention</th>
+								<th scope="col" class="c-moy">Moyenne</th>
 							</tr>
 						</thead>
 						<tbody>
@@ -97,11 +99,19 @@
 										if (e.key === 'Enter') goto(resultPath(data.annee, r.numero));
 									}}
 								>
-									<td class="numero md">{r.numero}</td>
-									<td class="name"><b>{r.nom}</b> {r.prenoms}</td>
-									<td class="md">{r.serie}</td>
-									<td class="mention">{r.mention}</td>
-									<td class="moy">{moy(r.moyenne)}</td>
+									<td class="c-num">{r.numero}</td>
+									<td class="c-name">
+										<span class="line" title="{r.nom} {r.prenoms}"><b>{r.nom}</b> {r.prenoms}</span>
+										<span class="line sub"
+											>N° {r.numero} · Série {r.serie} ·
+											<span class="hl" data-mention={r.mention}>{cap(r.mention)}</span></span
+										>
+									</td>
+									<td class="c-serie">{r.serie}</td>
+									<td class="c-mention">
+										<span class="hl" data-mention={r.mention}>{cap(r.mention)}</span>
+									</td>
+									<td class="c-moy">{moy(r.moyenne)}</td>
 								</tr>
 							{/each}
 						</tbody>

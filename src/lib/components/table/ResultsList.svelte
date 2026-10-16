@@ -102,6 +102,19 @@
 	const wide = new MediaQuery('(min-width: 768px)', true);
 	const asTable = $derived(wide.current || printing);
 
+	// L'en-tête du tableau colle sous la barre de recherche, dont la hauteur varie (pastilles)
+	let section: HTMLElement | undefined = $state();
+	$effect(() => {
+		const bar = section?.querySelector<HTMLElement>('.filterbar');
+		if (!section || !bar) return;
+		const host = section;
+		const ro = new ResizeObserver(() =>
+			host.style.setProperty('--filterbar-h', `${bar.offsetHeight}px`)
+		);
+		ro.observe(bar);
+		return () => ro.disconnect();
+	});
+
 	function keySelect(e: KeyboardEvent, r: Result) {
 		if (e.key === 'Enter' || e.key === ' ') {
 			e.preventDefault();
@@ -116,6 +129,7 @@
 </script>
 
 <section
+	bind:this={section}
 	id="resultats"
 	class="results"
 	aria-busy={loading}
@@ -165,16 +179,18 @@
 	{:else if asTable}
 		<p class="print-title">Résultats du Baccalauréat {annee}, Madagascar (données fictives)</p>
 		<div class="table-scroll">
+			<!-- Largeurs fixes (table-layout: fixed) : lignes de hauteur égale, cellules sur une
+			     ligne avec points de suspension. Colonnes selon la largeur : voir _list.scss. -->
 			<table class="results-table">
 				<thead>
 					<tr>
-						<th scope="col">Numéro</th>
-						<th scope="col">Candidat</th>
-						<th scope="col">Série</th>
-						<th scope="col" class="lg">Lycée</th>
-						<th scope="col">Résultat</th>
-						<th scope="col">Mention</th>
-						<th scope="col" class="moy">Moyenne</th>
+						<th scope="col" class="c-num">Numéro</th>
+						<th scope="col" class="c-name">Candidat</th>
+						<th scope="col" class="c-serie">Série</th>
+						<th scope="col" class="c-lycee">Lycée</th>
+						<th scope="col" class="c-res">Résultat</th>
+						<th scope="col" class="c-mention">Mention</th>
+						<th scope="col" class="c-moy">Moyenne</th>
 					</tr>
 				</thead>
 				<tbody>
@@ -185,16 +201,27 @@
 							onclick={() => onSelect(item)}
 							onkeydown={(e) => keySelect(e, item)}
 						>
-							<td class="numero">{item.numero}</td>
-							<td class="name"><b>{item.nom}</b> {item.prenoms}</td>
-							<td>{item.serie}</td>
-							<td class="muted lg">{item.ecole}</td>
-							<td><span class="statut-tag" data-statut={item.statut}>{cap(item.statut)}</span></td>
-							<td class="mention">
-								{#if item.mention}<span class="hl" data-mention={item.mention}>{item.mention}</span
-									>{:else}—{/if}
+							<td class="c-num">{item.numero}</td>
+							<td class="c-name">
+								<span class="line" title="{item.nom} {item.prenoms}"
+									><b>{item.nom}</b> {item.prenoms}</span
+								>
+								<span class="line sub" title={item.ecole}>{item.ecole}</span>
 							</td>
-							<td class="moy">{moy(item.moyenne)}</td>
+							<td class="c-serie">{item.serie}</td>
+							<td class="c-lycee" title={item.ecole}>{item.ecole}</td>
+							<td class="c-res">
+								<span class="statut-tag" data-statut={item.statut}>{cap(item.statut)}</span>
+								{#if item.mention}<span class="line sub"
+										><span class="hl" data-mention={item.mention}>{cap(item.mention)}</span></span
+									>{/if}
+							</td>
+							<td class="c-mention">
+								{#if item.mention}<span class="hl" data-mention={item.mention}
+										>{cap(item.mention)}</span
+									>{:else}<span class="none">—</span>{/if}
+							</td>
+							<td class="c-moy">{moy(item.moyenne)}</td>
 						</tr>
 					{/each}
 				</tbody>
@@ -207,8 +234,12 @@
 					<button type="button" onclick={() => onSelect(item)}>
 						<span class="name"><b>{item.nom}</b> {item.prenoms}</span>
 						<span class="moy num">{moy(item.moyenne)}</span>
-						<span class="meta num">N° {item.numero}, série {item.serie}</span>
+						<span class="meta num">N° {item.numero} · Série {item.serie}</span>
 						<span class="statut-tag" data-statut={item.statut}>{cap(item.statut)}</span>
+						<span class="ecole">{item.ecole}</span>
+						{#if item.mention}<span class="mention"
+								><span class="hl" data-mention={item.mention}>{cap(item.mention)}</span></span
+							>{/if}
 					</button>
 				</li>
 			{/each}
