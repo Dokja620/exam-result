@@ -4,6 +4,7 @@
 		copyText,
 		downloadBlob,
 		facebookUrl,
+		resultPath,
 		resultUrl,
 		shareResult,
 		whatsappUrl
@@ -272,6 +273,10 @@
 				</div>
 			{/if}
 		</div>
+		<a class="button ghost fiche" href="{resultPath(annee, result.numero)}/releve">
+			<Icon name="file-text" size={18} />
+			Obtenir ma fiche relevé de notes
+		</a>
 		<button class="button text copy" class:done={copied} type="button" onclick={copy}>
 			<Icon name={copied ? 'check' : 'link'} size={18} />
 			{copied ? 'Lien copié' : 'Copier le lien'}

@@ -247,6 +247,16 @@
 				cursor: progress;
 			}
 		}
+		.fiche {
+			flex: 1 1 100%;
+			height: 3rem;
+			margin-bottom: 0.5rem;
+
+			@include up($bp-sm) {
+				flex: 1 1 auto;
+				margin-bottom: 0;
+			}
+		}
 		.copy.done {
 			color: var(--admis-ink);
 			background: var(--admis-wash);

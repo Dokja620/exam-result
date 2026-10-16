@@ -21,6 +21,11 @@ Fonctionnalités :
 - **Relevé candidat** : modale accessible (`Esc`, focus piégé) sur la page d'accueil, et page
   autonome `/resultat/<annee>/<numero>` rendue côté serveur avec balises Open Graph (nom + statut),
   c'est l'URL utilisée par _Partager_ (Web Share, repli copie) et _Copier le lien_.
+- **Relevé de notes** : `/resultat/<annee>/<numero>/releve`, feuille A4 (matière, coef., note,
+  points, totaux, moyenne, mention, décision, QR vers le résultat, date). « Télécharger en PDF »
+  ouvre l'impression (choisir « Enregistrer en PDF »). Filigrane diagonal « DONNÉES FICTIVES —
+  DOCUMENT NON OFFICIEL » à l'écran et à l'impression ; ni nom de ministère, ni logo, sceau,
+  signature ou drapeau.
 - **Résultats par établissement** : `/etablissements/<annee>` classe les lycées par taux de
   réussite ; `?ecole=…` affiche la fiche d'un lycée et la liste de ses admis.
 - **Raccourci** : `/` focalise la recherche.
@@ -151,6 +156,7 @@ src/lib/components/Icon.svelte    icônes SVG intégrées (aucun appel réseau)
 src/lib/components/table/         ResultsList, FilterBar, Pagination, Modal, PDFexport, CSVexport
 src/routes/liste/[annee]          parcourir tous les résultats
 src/routes/resultat/[annee]/[numero]  page autonome d'un résultat (SSR + Open Graph)
+src/routes/resultat/[annee]/[numero]/releve  relevé de notes (A4, filigrané, imprimable)
 src/routes/etablissements/[annee] résultats par lycée
 src/routes/api/results/+server.ts endpoint JSON
 src/service-worker.ts             cache hors-ligne
