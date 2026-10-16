@@ -1,5 +1,11 @@
 @import 'tailwindcss';
-@plugin "daisyui";
+/* Seule la modale (et .label du pied de page) vient de daisyUI : Tailwind détecte sinon des
+   composants dans de simples mots du code (menu, input, list…) et les embarque. */
+@plugin "daisyui" {
+	exclude:
+		alert, badge, button, chat, drawer, dropdown, footer, hero, input, link, list, loading, mask,
+		menu, radio, skeleton, status, table, textarea;
+}
 
 @plugin "daisyui/theme" {
 	name: 'exam';
