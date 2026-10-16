@@ -1,11 +1,13 @@
 <script lang="ts">
 	import Icon from '$lib/components/Icon.svelte';
+	import type { Examples } from '$lib/types';
 
 	let {
 		annees,
 		annee,
 		loading = false,
 		notFound = '',
+		examples,
 		onCheck,
 		onYearChange
 	}: {
@@ -13,6 +15,7 @@
 		annee: number;
 		loading?: boolean;
 		notFound?: string;
+		examples?: Examples;
 		onCheck: (numero: string) => void;
 		onYearChange: (annee: number) => void;
 	} = $props();
@@ -35,6 +38,24 @@
 			return;
 		}
 		onCheck(numero);
+	}
+
+	// Numéros de test, un par issue, lus dans le jeu de données de l'année
+	const OUTCOMES = [
+		'ajourné',
+		'2e session',
+		'passable',
+		'assez bien',
+		'bien',
+		'très bien'
+	] as const;
+	const cap = (s: string) => s.charAt(0).toUpperCase() + s.slice(1);
+	const tries = $derived(
+		examples ? OUTCOMES.filter((o) => examples[o]).map((o) => ({ o, n: examples[o] })) : []
+	);
+	function tryNumero(n: string) {
+		numero = n;
+		onCheck(n);
 	}
 
 	const years = $derived([...annees].sort((a, b) => b - a));
@@ -99,7 +120,6 @@
 		{:else}
 			<p id="check-hint" class="hint">Six chiffres, par exemple 104 236.</p>
 		{/if}
-
 		<button class="button submit" type="submit" disabled={loading}>
 			{#if loading}
 				Chargement des résultats…
@@ -113,4 +133,25 @@
 	<p class="alt">
 		Numéro égaré ? <a href="/liste/{annee}?focus=1">Cherchez par nom</a>
 	</p>
+
+	{#if tries.length}
+		<small class="try">
+			<span class="try-label" id="try-label">Pour tester :</span>
+			<ul aria-labelledby="try-label">
+				{#each tries as t (t.o)}
+					<li>
+						<button
+							type="button"
+							class="num"
+							aria-label="Tester le numéro {t.n} ({t.o})"
+							onclick={() => tryNumero(t.n)}>{t.n}</button
+						>
+						<span class="sep" aria-hidden="true">—</span>
+						{#if t.o === 'ajourné' || t.o === '2e session'}<span class="out">{cap(t.o)}</span
+							>{:else}<span class="out hl" data-mention={t.o}>{cap(t.o)}</span>{/if}
+					</li>
+				{/each}
+			</ul>
+		</small>
+	{/if}
 </section>

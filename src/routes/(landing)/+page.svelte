@@ -80,6 +80,7 @@
 		annee={data.annee}
 		loading={ds.loading && !ds.error}
 		{notFound}
+		examples={data.meta.examples?.[String(data.annee)]}
 		onCheck={checkNumero}
 		onYearChange={changeYear}
 	/>

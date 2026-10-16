@@ -10,7 +10,8 @@ Site de démonstration indépendant (Ohayo Dev and Design), sans lien avec le mi
 
 Fonctionnalités :
 
-- **Vérifier mon résultat** : l'accueil se concentre sur la saisie du numéro (six cases) et la
+- **Vérifier mon résultat** : l'accueil se concentre sur la saisie du numéro (six cases, numéros de test
+  par issue lus dans `examples`) et la
   session en chiffres ; le relevé s'ouvre en modale.
 - **Recherche instantanée** par numéro ou nom/prénoms (insensible à la casse et aux accents, debounce).
 - **Filtres** : série, province, observation (admis / 2e session / ajourné), mention, réunis

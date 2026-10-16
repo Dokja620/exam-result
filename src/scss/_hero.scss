@@ -223,3 +223,61 @@
 		opacity: 0;
 	}
 }
+
+// Numéros de test (un par issue), sous « Numéro égaré ? » : discrets
+.check .try {
+	display: block;
+	margin-top: 1.25rem;
+	font-size: var(--fs-xs);
+	color: var(--ink-2);
+
+	.try-label {
+		display: block;
+		color: var(--ink-3);
+		font-weight: 500;
+		margin-bottom: 0.25rem;
+	}
+	ul {
+		margin: 0;
+		padding-left: 1.1rem;
+		list-style: disc;
+		display: grid;
+		gap: 0.1rem;
+	}
+	li::marker {
+		color: var(--ink-3);
+	}
+	button {
+		all: unset;
+		cursor: pointer;
+		font-weight: 600;
+		color: var(--blue-dark);
+		text-decoration: underline;
+		text-decoration-thickness: 1px;
+		text-underline-offset: 0.2em;
+		border-radius: 3px;
+		padding-block: 0.15rem;
+
+		&:hover {
+			color: var(--ink);
+		}
+		&:focus-visible {
+			outline: 2px solid var(--blue-dark);
+			outline-offset: 2px;
+		}
+	}
+	.sep {
+		margin-inline: 0.3em;
+		color: var(--ink-3);
+	}
+	.out {
+		color: var(--ink-2);
+	}
+	.hl {
+		font-weight: 400;
+		background: linear-gradient(
+			transparent 62%,
+			color-mix(in srgb, var(--hl, transparent) 55%, transparent) 62%
+		);
+	}
+}
