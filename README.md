@@ -170,3 +170,9 @@ src/routes/api/results/+server.ts endpoint JSON
 src/service-worker.ts             cache hors-ligne
 src/scss/                         styles (jetons dans _tokens.scss ; palette = thème daisyUI de app.css)
 ```
+
+## Historique
+
+- **v1** : [men-result](https://github.com/Dokja620/men-result) (Qwik, 2024), première version du
+  site. Les couleurs, la police Poppins, les onglets du drapeau aux coins des cartes et le hero
+  à confettis en viennent.
