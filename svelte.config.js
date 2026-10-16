@@ -4,7 +4,9 @@ import { vitePreprocess } from '@sveltejs/vite-plugin-svelte';
 
 // Cloudflare by default; ADAPTER=node builds a standalone server (used by the Dockerfile).
 const adapter =
-	process.env.ADAPTER === 'node' ? adapterNode({ out: 'build' }) : adapterCloudflare();
+	process.env.ADAPTER === 'node'
+		? adapterNode({ out: 'build', precompress: true })
+		: adapterCloudflare();
 
 /** @type {import('@sveltejs/kit').Config} */
 const config = {

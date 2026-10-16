@@ -10,6 +10,6 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	const notes = await notesOf(annee, result);
 	if (!notes.length) error(404, { message: 'Relevé de notes indisponible' });
 	const ds = await loadDataset(annee);
-	setHeaders({ 'cache-control': 'public, max-age=3600' });
+	setHeaders({ 'cache-control': 'public, max-age=300' });
 	return { annee, session: ds?.session ?? `Session ${annee}`, result: withoutNotes(result), notes };
 };

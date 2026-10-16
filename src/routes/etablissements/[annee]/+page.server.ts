@@ -18,6 +18,6 @@ export const load: PageServerLoad = async ({ params, url, setHeaders }) => {
 				.map(withoutNotes)
 		: [];
 
-	setHeaders({ 'cache-control': 'public, max-age=3600' });
+	setHeaders({ 'cache-control': 'public, max-age=300' });
 	return { annee, annees: listYears(), ecoles, fiche, admis };
 };

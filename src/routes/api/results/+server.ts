@@ -62,7 +62,7 @@ export const GET: RequestHandler = async ({ url, request, setHeaders }) => {
 				? 'public, max-age=31536000, immutable'
 				: 'public, max-age=3600, stale-while-revalidate=86400'
 	};
-	if (request.headers.get('if-none-match') === etag) {
+	if (request.headers.get('if-none-match')?.replace(/^W\//, '') === etag) {
 		return new Response(null, { status: 304, headers });
 	}
 	return new Response(c.body, { headers });

@@ -7,6 +7,6 @@ export const load: PageServerLoad = async ({ params, setHeaders }) => {
 	if (!listYears().includes(annee)) error(404, `Aucune session ${params.annee}`);
 	const result = await findByNumero(annee, params.numero);
 	if (!result) error(404, { message: 'introuvable' });
-	setHeaders({ 'cache-control': 'public, max-age=3600' });
+	setHeaders({ 'cache-control': 'public, max-age=300' });
 	return { annee, result: withoutNotes(result), annees: listYears() };
 };
